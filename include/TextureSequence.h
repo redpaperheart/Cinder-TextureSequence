@@ -14,8 +14,7 @@ using namespace ci::gl;
 using namespace ci::app;
 using namespace std;
 
-class TextureSequence
-{
+class TextureSequence{
 public:
     TextureSequence();
     ~TextureSequence();

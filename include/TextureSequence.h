@@ -42,6 +42,9 @@ public:
     bool isPlaying() { return playing; }
     bool isPaused() { return paused; }
     
+    //isDone returns true if sequence played thru and looping = false;
+    bool isComplete()const{return complete;};
+    
 protected:
     int playheadPosition;
     int playheadFrameInc;

@@ -66,6 +66,8 @@ void TextureSequence::setPlayheadPosition( int newPosition ){
     playheadPosition = max( 0, min( newPosition, totalFrames ) );
 }
 
+
+
 void TextureSequence::createFromTextureList( vector<Texture *> textureList ){
     textures.clear();
     textures = textureList;

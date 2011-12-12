@@ -27,10 +27,12 @@ public:
     void createFromPathList( vector<string> paths );
     void createFromTextureList( vector<Texture *> textureList );
     
-    int const getPlayheadFrameInc() { return playheadFrameInc; }
+    int getTotalFrames()const{ return totalFrames; } 
+    
+    int getPlayheadFrameInc() const { return playheadFrameInc; }
     void setPlayheadFrameInc( int frames ) { playheadFrameInc = frames; }
     
-    int const getPlayheadPosition() { return playheadPosition; }
+    int getPlayheadPosition() const { return playheadPosition; }
     void setPlayheadPosition( int newPosition );
     
     void setLooping( bool doLoop ) { looping = doLoop; }

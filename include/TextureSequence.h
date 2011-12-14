@@ -23,9 +23,9 @@ public:
     void play();
     void pause();
     void update();
-    void createFromDir( string path );
-    void createFromPathList( vector<string> paths );
-    void createFromTextureList( vector<Texture *> textureList );
+    void createFromDir(const string &path, const float &fps = 0.0f);
+    void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
+    void createFromTextureList(const vector<Texture *> &textureList, const float &fps = 0.0f);
     
     int getTotalFrames()const{ return totalFrames; } 
     
@@ -46,6 +46,9 @@ public:
     bool isComplete()const{return complete;};
     
 protected:
+    
+    
+    
     int playheadPosition;
     int playheadFrameInc;
     vector<Texture *> textures;
@@ -55,4 +58,8 @@ protected:
     bool paused;
     bool playing;
     bool complete;
+    
+    float mStartTime;
+    float mFps;
+    
 };

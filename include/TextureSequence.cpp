@@ -83,7 +83,7 @@ void TextureSequence::createFromDir( string filePath ){
     for ( fs::directory_iterator it( p ); it != fs::directory_iterator(); ++it ){
         if ( fs::is_regular_file( *it ) ){
             // -- Perhaps there is a better way to ignore hidden files
-            string fileName =  it->path().filename().string();
+            string fileName = it->path().filename().string();
             if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
                 textures.push_back( new Texture( loadImage( filePath + fileName ) ) );
             }

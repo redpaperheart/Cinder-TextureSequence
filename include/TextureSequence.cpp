@@ -1,6 +1,9 @@
 #include "TextureSequence.h"
 
-TextureSequence::TextureSequence() : playheadPosition( 0 ), playheadFrameInc( 1 ), paused( false ), playing( true ), looping( true ){}
+TextureSequence::TextureSequence() : playheadPosition( 0 ), playheadFrameInc( 1 ), paused( false ), playing( true ), looping( true ){
+    mStartTime = getElapsedSeconds();
+    mFps = 0.0f;
+}
 
 TextureSequence::~TextureSequence(){
     textures.clear();
@@ -35,6 +38,9 @@ void TextureSequence::stop(){
  *  -- Call on each frame to update the playhead
  */
 void TextureSequence::update(){
+    if(mFps && (getElapsedSeconds()-mStartTime) < 1/mFps ){
+        return;
+    }
     if( !paused && playing ){
         int newPosition = playheadPosition + playheadFrameInc;
         if( newPosition > totalFrames - 1 ){
@@ -57,6 +63,7 @@ void TextureSequence::update(){
             playheadPosition = newPosition;
         }
     }
+    mStartTime = getElapsedSeconds();
 }
 
 /**
@@ -68,7 +75,8 @@ void TextureSequence::setPlayheadPosition( int newPosition ){
 
 
 
-void TextureSequence::createFromTextureList( vector<Texture *> textureList ){
+void TextureSequence::createFromTextureList(const vector<Texture *> &textureList, const float &fps ){
+    mFps = fps;
     textures.clear();
     textures = textureList;
     totalFrames = textures.size();
@@ -77,7 +85,8 @@ void TextureSequence::createFromTextureList( vector<Texture *> textureList ){
 /**
  *  -- Loads all files contained in the supplied director and creates Textures from them
  */
-void TextureSequence::createFromDir( string filePath ){
+void TextureSequence::createFromDir(const string &filePath, const float &fps ){
+    mFps = fps;
     textures.clear();
     fs::path p( filePath );
     for ( fs::directory_iterator it( p ); it != fs::directory_iterator(); ++it ){
@@ -95,7 +104,8 @@ void TextureSequence::createFromDir( string filePath ){
 /**
  *  -- Loads all of the images in the supplied list of file paths
  */
-void TextureSequence::createFromPathList( vector<string> paths ){
+void TextureSequence::createFromPathList(const vector<string> &paths, const float &fps ){
+    mFps = fps;
     textures.clear();
     for ( int i = 0; i < paths.size(); ++i ){
         textures.push_back( new Texture( loadImage( paths[i] ) ) );

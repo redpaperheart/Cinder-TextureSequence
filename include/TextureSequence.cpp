@@ -1,13 +1,13 @@
 #include "TextureSequence.h"
 
-TextureSequence::TextureSequence() : playheadPosition( 0 ), playheadFrameInc( 1 ), paused( false ), playing( true ), looping( true ){
-    mStartTime = getElapsedSeconds();
-    mFps = 0.0f;
+TextureSequence::TextureSequence() : playheadPosition( 0 ), playheadFrameInc( 1 ), paused( false ), playing( true ), looping( true ), mFps(0.0f){
+    
 }
 
 TextureSequence::~TextureSequence(){
     textures.clear();
 }
+
 
 /**
  *  -- Begins playback of sequence
@@ -72,10 +72,18 @@ void TextureSequence::update(){
 void TextureSequence::setPlayheadPosition( int newPosition ){
     playheadPosition = max( 0, min( newPosition, totalFrames ) );
 }
+/**
+ *  -- Seek to a new position in the sequence
+ */
+void TextureSequence::setPlayheadPositionByPerc( float perc ){
+    perc = max( 0.0f, min( perc, 1.0f ) );
+    setPlayheadPosition( perc * totalFrames );
+}
 
 
 
 void TextureSequence::createFromTextureList(const vector<Texture *> &textureList, const float &fps ){
+    mStartTime = getElapsedSeconds();
     mFps = fps;
     textures.clear();
     textures = textureList;
@@ -85,7 +93,8 @@ void TextureSequence::createFromTextureList(const vector<Texture *> &textureList
 /**
  *  -- Loads all files contained in the supplied director and creates Textures from them
  */
-void TextureSequence::createFromDir(const string &filePath, const float &fps ){
+void TextureSequence::createFromDir(const string &filePath, const float &fps, gl::Texture::Format format ){
+    mStartTime = getElapsedSeconds();
     mFps = fps;
     textures.clear();
     fs::path p( filePath );
@@ -94,7 +103,7 @@ void TextureSequence::createFromDir(const string &filePath, const float &fps ){
             // -- Perhaps there is a better way to ignore hidden files
             string fileName = it->path().filename().string();
             if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
-                textures.push_back( new Texture( loadImage( filePath + fileName ) ) );
+                textures.push_back( new Texture( loadImage( filePath + fileName ), format ) );
             }
         }
     }
@@ -105,6 +114,7 @@ void TextureSequence::createFromDir(const string &filePath, const float &fps ){
  *  -- Loads all of the images in the supplied list of file paths
  */
 void TextureSequence::createFromPathList(const vector<string> &paths, const float &fps ){
+    mStartTime = getElapsedSeconds();
     mFps = fps;
     textures.clear();
     for ( int i = 0; i < paths.size(); ++i ){

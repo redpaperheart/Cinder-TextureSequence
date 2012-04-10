@@ -23,7 +23,8 @@ public:
     void play();
     void pause();
     void update();
-    void createFromDir(const string &path, const float &fps = 0.0f);
+    
+    void createFromDir(const string &path, const float &fps = 0.0f, Texture::Format format = Texture::Format() );
     void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
     void createFromTextureList(const vector<Texture *> &textureList, const float &fps = 0.0f);
     
@@ -34,6 +35,7 @@ public:
     
     int getPlayheadPosition() const { return playheadPosition; }
     void setPlayheadPosition( int newPosition );
+    void setPlayheadPositionByPerc( float perc );
     
     void setLooping( bool doLoop ) { looping = doLoop; }
     
@@ -46,8 +48,6 @@ public:
     bool isComplete()const{return complete;};
     
 protected:
-    
-    
     
     int playheadPosition;
     int playheadFrameInc;

@@ -1,6 +1,6 @@
 #include "TextureSequence.h"
 
-TextureSequence::TextureSequence() : playheadPosition( 0 ), playheadFrameInc( 1 ), paused( false ), playing( true ), looping( true ), mFps(0.0f){
+TextureSequence::TextureSequence() : playheadPosition( 0 ), playheadFrameInc( 1 ), paused( false ), playing( true ), looping( true ), mFps( 0.0f ), playReverse( false ){
     
 }
 
@@ -8,11 +8,11 @@ TextureSequence::~TextureSequence(){
     textures.clear();
 }
 
-
 /**
  *  -- Begins playback of sequence
  */
-void TextureSequence::play() {
+void TextureSequence::play(bool reverse) {
+    playReverse = reverse;
     paused = false;
     playing = true;
 }
@@ -42,7 +42,7 @@ void TextureSequence::update(){
         return;
     }
     if( !paused && playing ){
-        int newPosition = playheadPosition + playheadFrameInc;
+        int newPosition = playheadPosition + (playReverse ? -playheadFrameInc : playheadFrameInc);
         if( newPosition > totalFrames - 1 ){
             if( looping ){
                 complete = false;
@@ -70,16 +70,15 @@ void TextureSequence::update(){
  *  -- Seek to a new position in the sequence
  */
 void TextureSequence::setPlayheadPosition( int newPosition ){
-    playheadPosition = max( 0, min( newPosition, totalFrames ) );
+    playheadPosition = max( 0, min( newPosition, totalFrames - 1 ) );
 }
 /**
  *  -- Seek to a new position in the sequence
  */
 void TextureSequence::setPlayheadPositionByPerc( float perc ){
     perc = max( 0.0f, min( perc, 1.0f ) );
-    setPlayheadPosition( perc * totalFrames );
+    setPlayheadPosition( perc * (totalFrames - 1) );
 }
-
 
 
 void TextureSequence::createFromTextureList(const vector<Texture *> &textureList, const float &fps ){
@@ -103,7 +102,25 @@ void TextureSequence::createFromDir(const string &filePath, const float &fps, gl
             // -- Perhaps there is a better way to ignore hidden files
             string fileName = it->path().filename().string();
             if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
-                textures.push_back( new Texture( loadImage( filePath + fileName ), format ) );
+                try{
+                    //try loading from resource folder
+                    textures.push_back( new Texture( loadImage( loadResource( filePath + fileName ) ), format ) );
+                }catch(...){
+                    try { 
+                        // try to load relative to app
+                        textures.push_back( new Texture( loadImage( loadFile( filePath + fileName ) ), format ) );
+                    }
+                    catch(...) { 
+                        try {
+                            // try to load from URL
+                            textures.push_back( new Texture( loadImage( loadUrl( filePath + fileName ) ), format ) );
+                        }
+                        catch(...) {
+                            console() << getElapsedSeconds() << ":" << "TextureSequence failed to load:" << (filePath + fileName) << endl;
+                        }
+                    }
+                }
+                //textures.push_back( new Texture( loadImage( filePath + fileName ), format ) );
             }
         }
     }

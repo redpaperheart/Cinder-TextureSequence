@@ -20,7 +20,7 @@ public:
     ~TextureSequence();
     
     void stop();
-    void play();
+    void play(bool reverse = false);
     void pause();
     void update();
     
@@ -58,6 +58,7 @@ protected:
     bool paused;
     bool playing;
     bool complete;
+    bool playReverse;
     
     float mStartTime;
     float mFps;

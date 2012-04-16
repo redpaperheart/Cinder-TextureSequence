@@ -38,6 +38,7 @@ public:
     void setPlayheadPositionByPerc( float perc );
     
     void setLooping( bool doLoop ) { looping = doLoop; }
+    void setPlayReverse( bool doReverse ) { playReverse = doReverse; }
     
     Texture* const getCurrentTexture() { return textures[ playheadPosition ]; }
     

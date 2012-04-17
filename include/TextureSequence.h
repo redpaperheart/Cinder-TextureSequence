@@ -24,9 +24,11 @@ public:
     void pause();
     void update();
     
+    // SETUP
     void createFromDir(const string &path, const float &fps = 0.0f, Texture::Format format = Texture::Format() );
     void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
     void createFromTextureList(const vector<Texture *> &textureList, const float &fps = 0.0f);
+    
     
     int getTotalFrames()const{ return totalFrames; } 
     
@@ -45,6 +47,7 @@ public:
     
     bool isPlaying() { return playing; }
     bool isPaused() { return paused; }
+    bool empty(){ return textures.empty(); };
     
     //isDone returns true if sequence played thru and looping = false;
     bool isComplete()const{return complete;};

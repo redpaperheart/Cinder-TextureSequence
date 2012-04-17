@@ -8,6 +8,12 @@ TextureSequence::~TextureSequence(){
     textures.clear();
 }
 
+void TextureSequence::setFlipped( bool horizontal, bool vertical ){
+    flipHorizontal = horizontal;
+    flipVertical = vertical;
+    // create a matrix here to apply before drawing;
+}
+
 /**
  *  -- Begins playback of sequence
  */
@@ -32,6 +38,20 @@ void TextureSequence::stop(){
     playheadPosition = 0;
     playing = false;
     paused = false;
+}
+
+/**
+ *  -- Seek to a new position in the sequence
+ */
+void TextureSequence::setPlayheadPosition( int newPosition ){
+    playheadPosition = max( 0, min( newPosition, totalFrames - 1 ) );
+}
+/**
+ *  -- Seek to a new position in the sequence
+ */
+void TextureSequence::setPlayheadPositionByPerc( float perc ){
+    perc = max( 0.0f, min( perc, 1.0f ) );
+    setPlayheadPosition( perc * (totalFrames - 1) );
 }
 
 /**
@@ -66,19 +86,12 @@ void TextureSequence::update(){
     mStartTime = getElapsedSeconds();
 }
 
-/**
- *  -- Seek to a new position in the sequence
- */
-void TextureSequence::setPlayheadPosition( int newPosition ){
-    playheadPosition = max( 0, min( newPosition, totalFrames - 1 ) );
+void TextureSequence::draw(){
+    gl::pushMatrices();    
+    gl::draw(*getCurrentTexture());
+    gl::popMatrices();
 }
-/**
- *  -- Seek to a new position in the sequence
- */
-void TextureSequence::setPlayheadPositionByPerc( float perc ){
-    perc = max( 0.0f, min( perc, 1.0f ) );
-    setPlayheadPosition( perc * (totalFrames - 1) );
-}
+
 
 
 void TextureSequence::createFromTextureList(const vector<Texture *> &textureList, const float &fps ){

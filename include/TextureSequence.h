@@ -39,6 +39,7 @@ public:
     
     void setLooping( bool doLoop ) { looping = doLoop; }
     void setPlayReverse( bool doReverse ) { playReverse = doReverse; }
+    void setFlipped( bool horizontal, bool vertical );
     
     Texture* const getCurrentTexture() { return textures[ playheadPosition ]; }
     
@@ -60,6 +61,8 @@ protected:
     bool playing;
     bool complete;
     bool playReverse;
+    bool flipHorizontal;
+    bool flipVertical;
     
     float mStartTime;
     float mFps;

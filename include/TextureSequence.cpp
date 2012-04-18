@@ -38,7 +38,8 @@ void TextureSequence::stop(){
  *  -- Call on each frame to update the playhead
  */
 void TextureSequence::update(){
-    if(mFps && (getElapsedSeconds()-mStartTime) < 1/mFps ){
+        
+    if(mFps && (getElapsedSeconds()-mStartTime) < 1.0f/mFps ){
         return;
     }
     if( !paused && playing ){
@@ -93,7 +94,7 @@ void TextureSequence::createFromTextureList(const vector<Texture *> &textureList
  *  -- Loads all files contained in the supplied director and creates Textures from them
  */
 void TextureSequence::createFromDir(const string &filePath, const float &fps, gl::Texture::Format format ){
-    mStartTime = getElapsedSeconds();
+    
     mFps = fps;
     textures.clear();
     fs::path p( filePath );
@@ -124,6 +125,8 @@ void TextureSequence::createFromDir(const string &filePath, const float &fps, gl
             }
         }
     }
+    
+    mStartTime = getElapsedSeconds();
     totalFrames = textures.size();
 }
 

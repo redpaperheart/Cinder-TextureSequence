@@ -47,7 +47,7 @@ public:
     
     bool isPlaying() { return playing; }
     bool isPaused() { return paused; }
-    bool empty(){ return textures.empty(); };
+    bool isEmpty(){ return textures.empty(); };
     
     //isDone returns true if sequence played thru and looping = false;
     bool isComplete()const{return complete;};

@@ -86,11 +86,11 @@ void TextureSequence::update(){
     mStartTime = getElapsedSeconds();
 }
 
-void TextureSequence::draw(){
-    gl::pushMatrices();    
-    gl::draw(*getCurrentTexture());
-    gl::popMatrices();
-}
+//void TextureSequence::draw(){
+//    gl::pushMatrices();    
+//    gl::draw(*getCurrentTexture());
+//    gl::popMatrices();
+//}
 
 
 

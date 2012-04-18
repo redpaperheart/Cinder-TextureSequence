@@ -20,7 +20,7 @@ public:
     ~TextureSequence();
     
     void stop();
-    void play(bool reverse = false);
+    virtual void play(bool reverse = false);
     void pause();
     void update();
     
@@ -29,8 +29,7 @@ public:
     void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
     void createFromTextureList(const vector<Texture *> &textureList, const float &fps = 0.0f);
     
-    
-    int getTotalFrames()const{ return totalFrames; } 
+    int getTotalFrames()const{ return totalFrames; }
     
     int getPlayheadFrameInc() const { return playheadFrameInc; }
     void setPlayheadFrameInc( int frames ) { playheadFrameInc = frames; }
@@ -49,7 +48,7 @@ public:
     bool isPaused() { return paused; }
     bool isEmpty(){ return textures.empty(); };
     
-    //isDone returns true if sequence played thru and looping = false;
+    // isDone returns true if sequence played thru and looping = false;
     bool isComplete()const{return complete;};
     
 protected:

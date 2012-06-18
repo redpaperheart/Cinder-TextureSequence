@@ -19,15 +19,16 @@ public:
     TextureSequence();
     ~TextureSequence();
     
-    void stop();
+    virtual void stop();
     virtual void play(bool reverse = false);
-    void pause();
-    void update();
+    virtual void pause();
+    virtual void update();
+    //void draw();
     
     // SETUP
-    void createFromDir(const string &path, const float &fps = 0.0f, Texture::Format format = Texture::Format() );
-    void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
-    void createFromTextureList(const vector<Texture *> &textureList, const float &fps = 0.0f);
+    virtual void createFromDir(const string &path, const float &fps = 0.0f, Texture::Format format = Texture::Format() );
+    virtual void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
+    virtual void createFromTextureList(const vector<Texture *> &textureList, const float &fps = 0.0f);
     
     int getTotalFrames()const{ return totalFrames; }
     
@@ -63,8 +64,8 @@ protected:
     bool playing;
     bool complete;
     bool playReverse;
-    bool flipHorizontal;
-    bool flipVertical;
+    bool flipHorizontally;
+    bool flipVertically;
     
     float mStartTime;
     float mFps;

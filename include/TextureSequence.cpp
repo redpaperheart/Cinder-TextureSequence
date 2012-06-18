@@ -9,8 +9,8 @@ TextureSequence::~TextureSequence(){
 }
 
 void TextureSequence::setFlipped( bool horizontal, bool vertical ){
-    flipHorizontal = horizontal;
-    flipVertical = vertical;
+    flipHorizontally = horizontal;
+    flipVertically = vertical;
     // create a matrix here to apply before drawing;
 }
 
@@ -21,6 +21,7 @@ void TextureSequence::play(bool reverse) {
     playReverse = reverse;
     paused = false;
     playing = true;
+    complete = false;
 }
 
 /**

@@ -19,18 +19,18 @@ public:
     TextureSequence();
     ~TextureSequence();
     
-    void stop();
-    void play(bool reverse = false);
-    void pause();
-    void update();
+    virtual void stop();
+    virtual void play(bool reverse = false);
+    virtual void pause();
+    virtual void update();
+    //void draw();
     
     // SETUP
-    void createFromDir(const string &path, const float &fps = 0.0f, Texture::Format format = Texture::Format() );
-    void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
-    void createFromTextureList(const vector<Texture> &textureList, const float &fps = 0.0f);
+    virtual void createFromDir(const string &path, const float &fps = 0.0f, Texture::Format format = Texture::Format() );
+    virtual void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
+    virtual void createFromTextureList(const vector<Texture> &textureList, const float &fps = 0.0f);
     
-    
-    int getTotalFrames()const{ return totalFrames; } 
+    int getTotalFrames()const{ return totalFrames; }
     
     int getPlayheadFrameInc() const { return playheadFrameInc; }
     void setPlayheadFrameInc( int frames ) { playheadFrameInc = frames; }
@@ -41,14 +41,15 @@ public:
     
     void setLooping( bool doLoop ) { looping = doLoop; }
     void setPlayReverse( bool doReverse ) { playReverse = doReverse; }
+    void setFlipped( bool horizontal, bool vertical );
     
     Texture const getCurrentTexture() { return textures[ playheadPosition ]; }
     
     bool isPlaying() { return playing; }
     bool isPaused() { return paused; }
-    bool empty(){ return textures.empty(); };
+    bool isEmpty(){ return textures.empty(); };
     
-    //isDone returns true if sequence played thru and looping = false;
+    // isDone returns true if sequence played thru and looping = false;
     bool isComplete()const{return complete;};
     
 protected:
@@ -63,6 +64,8 @@ protected:
     bool playing;
     bool complete;
     bool playReverse;
+    bool flipHorizontally;
+    bool flipVertically;
     
     float mStartTime;
     float mFps;

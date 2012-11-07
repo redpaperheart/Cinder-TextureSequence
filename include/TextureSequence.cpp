@@ -8,6 +8,12 @@ TextureSequence::~TextureSequence(){
     textures.clear();
 }
 
+void TextureSequence::setFlipped( bool horizontal, bool vertical ){
+    flipHorizontally = horizontal;
+    flipVertically = vertical;
+    // create a matrix here to apply before drawing;
+}
+
 /**
  *  -- Begins playback of sequence
  */
@@ -15,6 +21,7 @@ void TextureSequence::play(bool reverse) {
     playReverse = reverse;
     paused = false;
     playing = true;
+    complete = false;
 }
 
 /**
@@ -35,10 +42,25 @@ void TextureSequence::stop(){
 }
 
 /**
+ *  -- Seek to a new position in the sequence
+ */
+void TextureSequence::setPlayheadPosition( int newPosition ){
+    playheadPosition = max( 0, min( newPosition, totalFrames - 1 ) );
+}
+/**
+ *  -- Seek to a new position in the sequence
+ */
+void TextureSequence::setPlayheadPositionByPerc( float perc ){
+    perc = max( 0.0f, min( perc, 1.0f ) );
+    setPlayheadPosition( perc * (totalFrames - 1) );
+}
+
+/**
  *  -- Call on each frame to update the playhead
  */
 void TextureSequence::update(){
-    if(mFps && (getElapsedSeconds()-mStartTime) < 1/mFps ){
+        
+    if(mFps && (getElapsedSeconds()-mStartTime) < 1.0f/mFps ){
         return;
     }
     if( !paused && playing ){
@@ -66,19 +88,12 @@ void TextureSequence::update(){
     mStartTime = getElapsedSeconds();
 }
 
-/**
- *  -- Seek to a new position in the sequence
- */
-void TextureSequence::setPlayheadPosition( int newPosition ){
-    playheadPosition = max( 0, min( newPosition, totalFrames - 1 ) );
-}
-/**
- *  -- Seek to a new position in the sequence
- */
-void TextureSequence::setPlayheadPositionByPerc( float perc ){
-    perc = max( 0.0f, min( perc, 1.0f ) );
-    setPlayheadPosition( perc * (totalFrames - 1) );
-}
+//void TextureSequence::draw(){
+//    gl::pushMatrices();    
+//    gl::draw(*getCurrentTexture());
+//    gl::popMatrices();
+//}
+
 
 
 void TextureSequence::createFromTextureList(const vector<Texture> &textureList, const float &fps ){
@@ -93,7 +108,7 @@ void TextureSequence::createFromTextureList(const vector<Texture> &textureList, 
  *  -- Loads all files contained in the supplied director and creates Textures from them
  */
 void TextureSequence::createFromDir(const string &filePath, const float &fps, gl::Texture::Format format ){
-    mStartTime = getElapsedSeconds();
+    
     mFps = fps;
     textures.clear();
     fs::path p( filePath );
@@ -124,6 +139,8 @@ void TextureSequence::createFromDir(const string &filePath, const float &fps, gl
             }
         }
     }
+    
+    mStartTime = getElapsedSeconds();
     totalFrames = textures.size();
 }
 

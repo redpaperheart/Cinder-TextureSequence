@@ -27,7 +27,7 @@ public:
     // SETUP
     void createFromDir(const string &path, const float &fps = 0.0f, Texture::Format format = Texture::Format() );
     void createFromPathList(const vector<string> &paths, const float &fps = 0.0f);
-    void createFromTextureList(const vector<Texture *> &textureList, const float &fps = 0.0f);
+    void createFromTextureList(const vector<Texture> &textureList, const float &fps = 0.0f);
     
     
     int getTotalFrames()const{ return totalFrames; } 
@@ -42,7 +42,7 @@ public:
     void setLooping( bool doLoop ) { looping = doLoop; }
     void setPlayReverse( bool doReverse ) { playReverse = doReverse; }
     
-    Texture* const getCurrentTexture() { return textures[ playheadPosition ]; }
+    Texture const getCurrentTexture() { return textures[ playheadPosition ]; }
     
     bool isPlaying() { return playing; }
     bool isPaused() { return paused; }
@@ -55,7 +55,7 @@ protected:
     
     int playheadPosition;
     int playheadFrameInc;
-    vector<Texture *> textures;
+    vector<Texture> textures;
     
     int totalFrames;
     bool looping;

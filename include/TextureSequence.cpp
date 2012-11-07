@@ -81,7 +81,7 @@ void TextureSequence::setPlayheadPositionByPerc( float perc ){
 }
 
 
-void TextureSequence::createFromTextureList(const vector<Texture *> &textureList, const float &fps ){
+void TextureSequence::createFromTextureList(const vector<Texture> &textureList, const float &fps ){
     mStartTime = getElapsedSeconds();
     mFps = fps;
     textures.clear();
@@ -104,16 +104,16 @@ void TextureSequence::createFromDir(const string &filePath, const float &fps, gl
             if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
                 try{
                     //try loading from resource folder
-                    textures.push_back( new Texture( loadImage( loadResource( filePath + fileName ) ), format ) );
+                    textures.push_back( Texture( loadImage( loadResource( filePath + fileName ) ), format ) );
                 }catch(...){
                     try { 
                         // try to load relative to app
-                        textures.push_back( new Texture( loadImage( loadFile( filePath + fileName ) ), format ) );
+                        textures.push_back( Texture( loadImage( loadFile( filePath + fileName ) ), format ) );
                     }
                     catch(...) { 
                         try {
                             // try to load from URL
-                            textures.push_back( new Texture( loadImage( loadUrl( filePath + fileName ) ), format ) );
+                            textures.push_back( Texture( loadImage( loadUrl( filePath + fileName ) ), format ) );
                         }
                         catch(...) {
                             console() << getElapsedSeconds() << ":" << "TextureSequence failed to load:" << (filePath + fileName) << endl;
@@ -135,7 +135,7 @@ void TextureSequence::createFromPathList(const vector<string> &paths, const floa
     mFps = fps;
     textures.clear();
     for ( int i = 0; i < paths.size(); ++i ){
-        textures.push_back( new Texture( loadImage( paths[i] ) ) );
+        textures.push_back( Texture( loadImage( paths[i] ) ) );
     }
     totalFrames = textures.size();
 }

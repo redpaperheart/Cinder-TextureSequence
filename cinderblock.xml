@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="TextureSequence"
+	id="com.redpaperheart.texturesequence"
+    git="git@github.com:redpaperheart/Cinder-TextureSequence.git"
+	author="Red Paper Heart"
+	summary="A helpful class to controle an image sequence."
+    version="1.0"
+    url="https://github.com/redpaperheart/Cinder-TextureSequence"
+	>
+	<supports os="macosx" />
+    <includePath>src</includePath>
+    <header>src/rph/TextureSequence.h</header>
+    <source>src/rph/TextureSequence.cpp</source>
+</block>
+</cinder>

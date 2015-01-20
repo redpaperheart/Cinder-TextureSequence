@@ -1,4 +1,5 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/gl/gl.h"
 
@@ -73,7 +74,6 @@ void BasicSampleApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
     gl::color(1,1,1);
     
-    
     gl::pushMatrices();
     for( int i=0; i < mFrames.size(); i++){
         if(i%2==0) gl::color(1,1,1); else gl::color(0.9,0.9,0.9);
@@ -82,17 +82,14 @@ void BasicSampleApp::draw()
     }
     gl::popMatrices();
     
-    
     gl::pushMatrices();
-    gl::translate(ci::app::getWindowCenter() - mSequence.getCurrentTexture()->getSize()/2.0f);
-    //console() << mSequence.getCurrentTexture()->getSize() << endl;
-    gl::draw( mSequence.getCurrentTexture() );
+        gl::translate(ci::app::getWindowCenter() - vec2(mSequence.getCurrentTexture()->getSize()) * 0.5f);
+        gl::draw( mSequence.getCurrentTexture() );
     gl::popMatrices();
-    gl::drawString( ci::toString( getAverageFps() ), Vec2f(20,20));
-    gl::drawString( (mSequence.isLooping() ? "looping" : " not looping"), Vec2f(20,40));
     
+    gl::drawString( ci::toString( getAverageFps() ), vec2(20,20));
+    gl::drawString( (mSequence.isLooping() ? "looping" : " not looping"), vec2(20,40));
 }
-
 
 
 /**

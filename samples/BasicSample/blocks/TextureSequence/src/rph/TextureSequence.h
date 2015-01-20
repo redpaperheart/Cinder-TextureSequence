@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014 Red Paper Heart Inc.
+ Copyright (c) 2015 Red Paper Heart Inc.
  
  This code is intended for use with the Cinder C++ library: http://libcinder.org
  
@@ -21,14 +21,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
-#pragma once
 
+#pragma once
 
 #include "cinder/app/App.h"
 #include "cinder/gl/Texture.h"
-//#include "cinder/ImageIo.h"
-//#include "cinder/Utilities.h"
-//#include "cinder/Filesystem.h"
 
 namespace rph{
 
@@ -37,40 +34,31 @@ namespace rph{
         TextureSequence();
         ~TextureSequence();
         
+        virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const float &fps = 0.0f);
+        virtual void update();
+
         virtual void play(bool reverse = false);
         virtual void stop();
         virtual void reset();
-        
-        virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const float &fps = 0.0f);
-        
-        virtual void update();
 
+        void stepForward( int frameInc = 1 );
+        void stepBackward( int frameInc = 1 );
         
-        int getNumFrames()const{ return mNumFrames; }
-        
-        void setFramerate( float fps);
-        float getFramerate(){ return mFps; }
-        
-        void stepForward( int frameInc = 1);
-        void stepBackward(int frameInc = 1);
-        
-        int getPlayheadPosition() const { return mPlayheadPosition; }
+        void setFramerate( float fps );
         void setPlayheadPosition( int newPosition );
         void setPlayheadPositionByPerc( float perc );
+        void setLoop( bool doLoop )                 { mLooping = doLoop; }
+        
+        bool isPlaying()                            { return mPlaying; }                    // returns true if sequence is currently playing
+        bool isEmpty()                              { return mTextureRefs.empty(); };       // returns true if sequence is set up
+        bool isDone()const                          { return mComplete; }                   // returns true if sequence played thru and looping = false;
+        bool isLooping( )                           { return mLooping; }
+        
+        int getNumFrames()const                     { return mNumFrames; }
+        int getPlayheadPosition() const             { return mPlayheadPosition; }
+        float getFramerate()                        { return mFps; }
         
         ci::gl::TextureRef const getCurrentTexture();
-        
-        void setLoop( bool doLoop ) { mLooping = doLoop; }
-        bool isLooping( ) { return mLooping; }
-        
-        // isPlaying returns true if sequence is currently playing
-        bool isPlaying() { return mPlaying; }
-
-        // isEmpty returns true if sequence is set up
-        bool isEmpty(){ return mTextureRefs.empty(); };
-        
-        // isDone returns true if sequence played thru and looping = false;
-        bool isDone()const{ return mComplete; };
         
     protected:
         std::vector<ci::gl::TextureRef> mTextureRefs;
@@ -87,9 +75,5 @@ namespace rph{
         bool mPlaying = false;
         bool mComplete = false;
         bool mPlayReverse = false;
-        
-        
-        
-        
     };
 }

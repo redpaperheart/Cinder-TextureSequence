@@ -11,94 +11,88 @@ using namespace std;
 
 class BasicSampleApp : public AppNative {
   public:
-    void prepareSettings(cinder::app::AppBasic::Settings *settings);
 	void setup();
 	void update();
 	void draw();
+    void keyDown(KeyEvent event);
     
-    void keyDown( ci::app::KeyEvent event );
-    
-    std::vector<ci::gl::TextureRef> createTextureRefsFromDir(ci::fs::path dir, gl::Texture::Format format = ci::gl::Texture::Format() );
-    
-    rph::TextureSequence mSequence;
-    
-    std::vector<Rectf> mFrames;
+    std::vector<gl::TextureRef> createTextureRefsFromDir(fs::path dir, gl::Texture::Format format = ci::gl::Texture::Format() );
+  
+    std::vector<Rectf> mFrames;     // rectangles to draw the timeline
+  
+    rph::TextureSequence mSequence; // stored texture sequence
 };
 
-void BasicSampleApp::prepareSettings(cinder::app::AppBasic::Settings *settings)
+void BasicSampleApp::setup()
 {
-    settings->setWindowSize( 800, 600 );
-    settings->setFrameRate( 30.0 );
+    // load a set of textureRefs
+    std::vector<gl::TextureRef> textureRefs = createTextureRefsFromDir("sequences/RedPaperHeartDrip");
     
-}
-
-void BasicSampleApp::setup(){
-    std::vector<ci::gl::TextureRef> textureRefs = createTextureRefsFromDir("sequences/RedPaperHeartDrip");
+    // setup texture sequence
     mSequence.setup( textureRefs, 30 );
-    //mSequence.setLoop(true);
+    mSequence.setLoop(true);
     mSequence.play();
     
-    float width = ci::app::getWindowWidth()-20;
-    width /= mSequence.getNumFrames();
-    for( int i=0; i < mSequence.getNumFrames(); i++){
+    // save rectangles to draw the playhead
+    float width = (ci::app::getWindowWidth() - 20) / (float)mSequence.getNumFrames();
+    for( int i=0; i < mSequence.getNumFrames(); i++ ){
          mFrames.push_back( Rectf(i*width+10, getWindowHeight()-20, i*width+width+10, getWindowHeight()-10) );
     }
+    
     gl::enableAlphaBlending();
 }
 
-void BasicSampleApp::keyDown( ci::app::KeyEvent event )
+void BasicSampleApp::update()
 {
-    
-        if( event.getCode() == ci::app::KeyEvent::KEY_SPACE){
-            if(mSequence.isPlaying()){
-                mSequence.stop();
-            }else{
-                mSequence.play();
-            }
-        } else if( event.getCode() == ci::app::KeyEvent::KEY_r ){
-            mSequence.play(true);
-            
-        } else if( event.getCode() == ci::app::KeyEvent::KEY_l ){
-            mSequence.setLoop( !mSequence.isLooping() );
-            
-        }
-}
-
-void BasicSampleApp::update(){
     mSequence.update();
 }
 
 void BasicSampleApp::draw()
 {
-	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) );
-    gl::color(1,1,1);
     
-    gl::pushMatrices();
-    for( int i=0; i < mFrames.size(); i++){
-        if(i%2==0) gl::color(1,1,1); else gl::color(0.9,0.9,0.9);
-        if(i == mSequence.getPlayheadPosition()) gl::color(1,0,0);
+    // draw playhead
+    for( int i=0; i < mFrames.size(); i++ ){
+        if( i % 2 == 0 )    gl::color(1, 1, 1);
+        else                gl::color(0.9, 0.9, 0.9);
+        if( i == mSequence.getPlayheadPosition() ) gl::color(1, 0, 0);
         gl::drawSolidRect( mFrames[i] );
     }
-    gl::popMatrices();
     
+    // draw texture
     gl::pushMatrices();
         gl::translate(ci::app::getWindowCenter() - vec2(mSequence.getCurrentTexture()->getSize()) * 0.5f);
         gl::draw( mSequence.getCurrentTexture() );
     gl::popMatrices();
     
-    gl::drawString( ci::toString( getAverageFps() ), vec2(20,20));
-    gl::drawString( (mSequence.isLooping() ? "looping" : " not looping"), vec2(20,40));
+    // draw debug strings
+    gl::drawString( ci::toString( getAverageFps() ), vec2(20, 20));
+    gl::drawString( (mSequence.isLooping() ? "looping" : " not looping"), vec2(20, 40));
 }
 
+void BasicSampleApp::keyDown( KeyEvent event )
+{
+    switch (event.getChar()) {
+        case ' ':
+            if( mSequence.isPlaying() ) mSequence.stop();
+            else                        mSequence.play();
+            break;
+        case 'r':
+            mSequence.play(true);
+            break;
+        case 'l':
+            mSequence.setLoop( !mSequence.isLooping() );
+            break;
+    }
+}
 
 /**
  *  -- Loads all files contained in the supplied director and creates Textures from them
  */
-std::vector<ci::gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(ci::fs::path dir, gl::Texture::Format format ){
+std::vector<ci::gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(ci::fs::path dir, gl::Texture::Format format )
+{
     std::vector<ci::gl::TextureRef> textureRefs;
     if( !ci::fs::exists( dir ) ){
-        //ci::app::console() << "rph::TextureStore::loadImageDirectory - WARNING - ("<< dir << ") Folder does not Exist!" << std::endl;
         dir = ci::app::App::getResourcePath() / dir;
         if( !ci::fs::exists(dir) ){
             ci::app::console() << "rph::TextureStore::loadImageDirectory - ERROR - ("<< dir << ") Folder does not Exist!" << std::endl;

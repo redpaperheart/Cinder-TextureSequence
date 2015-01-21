@@ -72,6 +72,15 @@ namespace rph {
     }
 
     /**
+     *  -- Stops/Pauses playback
+     */
+    void TextureSequence::togglePlayback()
+    {
+        if (isPlaying()) stop();
+        else play();
+    }
+    
+    /**
      *  -- Stops playback and resets the playhead to zero
      */
     void TextureSequence::reset()
@@ -114,7 +123,7 @@ namespace rph {
             //int newPosition = mPlayheadPosition + frameInc;
             int newPosition = frameToBe;
             
-            ci::app::console() << "1 . Frame to be: " << frameToBe << ", newPosition: "<< newPosition<< ", playheadPos: "<< mPlayheadPosition << ", frameInc: " << frameInc << std::endl;
+//            ci::app::console() << "1 . Frame to be: " << frameToBe << ", newPosition: "<< newPosition<< ", playheadPos: "<< mPlayheadPosition << ", frameInc: " << frameInc << std::endl;
             
             if( newPosition > mNumFrames - 1 ){
                 if( mLooping ){
@@ -139,7 +148,7 @@ namespace rph {
                 mPlayheadPosition = newPosition;
             }
             
-            ci::app::console() << "2 . Frame to be: " << frameToBe << ", newPosition: "<< newPosition<< ", playheadPos: "<< mPlayheadPosition << std::endl;
+//            ci::app::console() << "2 . Frame to be: " << frameToBe << ", newPosition: "<< newPosition<< ", playheadPos: "<< mPlayheadPosition << std::endl;
         }
     }
 

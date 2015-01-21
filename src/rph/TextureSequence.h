@@ -39,6 +39,7 @@ namespace rph{
 
         virtual void play(bool reverse = false);
         virtual void stop();
+        virtual void togglePlayback();
         virtual void reset();
 
         void stepForward( int frameInc = 1 );

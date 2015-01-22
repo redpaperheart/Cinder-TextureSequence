@@ -34,7 +34,7 @@ namespace rph{
         TextureSequence();
         ~TextureSequence();
         
-        virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const float &fps = 0.0f);
+        virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const float &fps = 30.0f);
         virtual void update();
 
         virtual void play(bool reverse = false);
@@ -66,7 +66,7 @@ namespace rph{
         int mPlayheadPosition = 0;
         int mNumFrames = 0;
         
-        float mFps = 0.0f;
+        float mFps = 30.0f;
         float mTimePerFrame = 0.0f;
         float mStartTime = 0.0f;
         float mStartFrame = 0.0f;

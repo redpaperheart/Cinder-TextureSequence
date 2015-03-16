@@ -3,11 +3,10 @@
 #include "cinder/Utilities.h"
 #include "cinder/gl/gl.h"
 
-#include "rph/TextureSequence.h"
+#include "rph/Sequence.h"
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
 
 class BasicSampleApp : public AppNative {
   public:
@@ -16,11 +15,10 @@ class BasicSampleApp : public AppNative {
 	void draw();
     void keyDown(KeyEvent event);
     
-    std::vector<gl::TextureRef> createTextureRefsFromDir(fs::path dir, gl::Texture::Format format = ci::gl::Texture::Format() );
+    std::vector<gl::TextureRef> createTextureRefsFromDir(fs::path dir, gl::Texture::Format format = gl::Texture::Format() );
   
-    std::vector<Rectf> mFrames;     // rectangles to draw the timeline
-  
-    rph::TextureSequence mSequence; // stored texture sequence
+    std::vector<Rectf>              mFrames;     // rectangles to draw the timeline
+    rph::Sequence<gl::TextureRef>   mSequence;  // stored texture sequence
 };
 
 void BasicSampleApp::setup()
@@ -34,7 +32,7 @@ void BasicSampleApp::setup()
     mSequence.play();
     
     // save rectangles to draw the playhead
-    float width = (ci::app::getWindowWidth() - 20) / (float)mSequence.getNumFrames();
+    float width = (getWindowWidth() - 20) / (float)mSequence.getNumFrames();
     for( int i=0; i < mSequence.getNumFrames(); i++ ){
          mFrames.push_back( Rectf(i*width+10, getWindowHeight()-20, i*width+width+10, getWindowHeight()-10) );
     }
@@ -61,12 +59,12 @@ void BasicSampleApp::draw()
     
     // draw texture
     gl::pushMatrices();
-        gl::translate(ci::app::getWindowCenter() - vec2(mSequence.getCurrentTexture()->getSize()) * 0.5f);
-        gl::draw( mSequence.getCurrentTexture() );
+        gl::translate( getWindowCenter() - vec2(mSequence.getCurrentFrame()->getSize()) * 0.5f);
+        gl::draw( mSequence.getCurrentFrame() );
     gl::popMatrices();
     
     // draw debug strings
-    gl::drawString( ci::toString( getAverageFps() ), vec2(20, 20));
+    gl::drawString( toString( getAverageFps() ), vec2(20, 20));
     gl::drawString( (mSequence.isLooping() ? "looping" : " not looping"), vec2(20, 40));
 }
 
@@ -89,13 +87,13 @@ void BasicSampleApp::keyDown( KeyEvent event )
 /**
  *  -- Loads all files contained in the supplied director and creates Textures from them
  */
-std::vector<ci::gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(ci::fs::path dir, gl::Texture::Format format )
+std::vector<gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(fs::path dir, gl::Texture::Format format )
 {
-    std::vector<ci::gl::TextureRef> textureRefs;
-    if( !ci::fs::exists( dir ) ){
-        dir = ci::app::App::getResourcePath() / dir;
-        if( !ci::fs::exists(dir) ){
-            ci::app::console() << "rph::TextureStore::loadImageDirectory - ERROR - ("<< dir << ") Folder does not Exist!" << std::endl;
+    std::vector<gl::TextureRef> textureRefs;
+    if( !fs::exists( dir ) ){
+        dir = app::App::getResourcePath() / dir;
+        if( !fs::exists(dir) ){
+            app::console() << "LoadImageDirectory - ERROR - ("<< dir << ") Folder does not Exist!" << std::endl;
             return textureRefs;
         }
     }
@@ -103,7 +101,7 @@ std::vector<ci::gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(ci::fs:
         if ( fs::is_regular_file( *it ) ){
             
             // -- Perhaps there is a better way to ignore hidden files
-            string fileName = it->path().filename().string(); 
+            std::string fileName = it->path().filename().string();
             if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
                 fileName = dir.string() +"/"+ fileName;
                 try{
@@ -120,7 +118,7 @@ std::vector<ci::gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(ci::fs:
                             textureRefs.push_back( gl::Texture::create( loadImage( loadUrl( fileName ) ), format ) );
                         }
                         catch(...) {
-                            console() << getElapsedSeconds() << ":" << "TextureSequence failed to load:" << ( fileName) << endl;
+                            console() << getElapsedSeconds() << ":" << "Failed to load:" << ( fileName) << std::endl;
                         }
                     }
                 }

@@ -14,7 +14,6 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		20CB1D1E1A6ED2B90026ECA4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20CB1D1D1A6ED2B90026ECA4 /* AVFoundation.framework */; };
 		20CB1D201A6ED2C10026ECA4 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20CB1D1F1A6ED2C10026ECA4 /* CoreMedia.framework */; };
-		20CB1D231A6EEFE90026ECA4 /* TextureSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20CB1D211A6EEFE90026ECA4 /* TextureSequence.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		65240FC4194F711B00E74C7A /* sequences in Resources */ = {isa = PBXBuildFile; fileRef = 65240FC3194F711B00E74C7A /* sequences */; };
@@ -33,8 +32,7 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		20CB1D1D1A6ED2B90026ECA4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		20CB1D1F1A6ED2C10026ECA4 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		20CB1D211A6EEFE90026ECA4 /* TextureSequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureSequence.cpp; path = ../../../src/rph/TextureSequence.cpp; sourceTree = "<group>"; };
-		20CB1D221A6EEFE90026ECA4 /* TextureSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureSequence.h; path = ../../../src/rph/TextureSequence.h; sourceTree = "<group>"; };
+		20CB1D221A6EEFE90026ECA4 /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sequence.h; path = ../../../src/rph/Sequence.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
@@ -178,8 +176,7 @@
 		DB63E82F782B4574A323F9D9 /* rph */ = {
 			isa = PBXGroup;
 			children = (
-				20CB1D211A6EEFE90026ECA4 /* TextureSequence.cpp */,
-				20CB1D221A6EEFE90026ECA4 /* TextureSequence.h */,
+				20CB1D221A6EEFE90026ECA4 /* Sequence.h */,
 			);
 			name = rph;
 			sourceTree = "<group>";
@@ -250,7 +247,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6EF4146C59840D0931F15C2 /* BasicSampleApp.cpp in Sources */,
-				20CB1D231A6EEFE90026ECA4 /* TextureSequence.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

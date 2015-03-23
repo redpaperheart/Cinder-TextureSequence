@@ -30,19 +30,22 @@ class BasicSampleApp : public AppNative {
   
     MayaCamUI mMayaCam;
     rph::Sequence<gl::BatchRef> mSequence;
+    gl::GlslProgRef mPhong;
 };
 
 void BasicSampleApp::setup()
 {
+    // load shaders
+    mPhong = gl::GlslProg::create(loadAsset("DebugPhong.vert"), loadAsset("DebugPhong.frag"));
+    
     // load the obj sequence
     std::vector<TriMeshRef> meshes = loadObjFolder("wooddoll");
     
     // create a batch for every mesh
-    gl::GlslProgRef shader = gl::getStockShader(gl::ShaderDef().color());
     std::vector<gl::BatchRef> batches;
     
     for (TriMeshRef mesh : meshes) {
-        batches.push_back(gl::Batch::create(*mesh, shader));
+        batches.push_back(gl::Batch::create(*mesh, mPhong));
     }
     
     // setup texture sequence
@@ -53,8 +56,8 @@ void BasicSampleApp::setup()
     // setup camera
     CameraPersp initialCam;
     initialCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1, 10000 );
-    initialCam.setEyePoint(vec3(0.2, 0.3, 1));
-    initialCam.setCenterOfInterestPoint(vec3(0.2, 0.3, 0));
+    initialCam.setEyePoint(vec3(0.1, 0.3, 1));
+    initialCam.setCenterOfInterestPoint(vec3(0.1, 0.3, 0));
     mMayaCam.setCurrentCam( initialCam );
     
     gl::enableAlphaBlending();
@@ -73,9 +76,12 @@ void BasicSampleApp::draw()
     gl::enableDepthRead();
     
     // draw 3d model
+    gl::ScopedGlslProg phong(mPhong);
+    
     gl::ScopedMatrices matricesCamera;
     gl::setMatrices( mMayaCam.getCamera() );
     gl::color(Color::hex(0xDEAE86));
+   
     mSequence.getCurrentFrame()->draw();
 }
 

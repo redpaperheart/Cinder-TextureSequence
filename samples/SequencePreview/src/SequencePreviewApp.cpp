@@ -63,6 +63,7 @@ void SequencePreviewApp::setup(){
 void SequencePreviewApp::fileDrop( FileDropEvent event ){
     stringstream ss;
     ss << "You dropped files @ " << event.getPos() << " and the files were: " << endl;
+    
     for( size_t s = 0; s < event.getNumFiles(); ++s ){
         const fs::path& path = event.getFile( s );
         ss << event.getFile( s ) << endl;

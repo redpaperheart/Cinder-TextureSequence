@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
@@ -19,18 +20,23 @@ public:
     void mouseDown( MouseEvent event ) override;
     void keyDown( KeyEvent event ) override;
     void fileDrop( FileDropEvent event ) override;
-    
     void update() override;
     void draw() override;
+    
+    void loadImages(const fs::path& path );
+    void renderSceneToFbo(std::vector<ci::gl::TextureRef> textureRefs);
+    
     void trim( SurfaceRef surf, SurfaceRef surfTrim );
     
     SurfaceRef  mSurfaceOrigin;
     SurfaceRef  mSurfaceTrim;
-    gl::TextureRef  mTexture;
     Area mTrimArea;
+    gl::TextureRef  mTexture;
+    gl::TextureRef  mImgTexure;
+    gl::FboRef      mFbo;
     
-    //int  trimTop, trimBottom, trimLeft, trimRight;
-    
+    ci::gl::TextureRef load( const std::string &url, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
+    std::vector<ci::gl::TextureRef> loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
 };
 
 void ImageOptimizerApp::prepareSettings( Settings *settings ){
@@ -40,13 +46,48 @@ void ImageOptimizerApp::prepareSettings( Settings *settings ){
 
 void ImageOptimizerApp::setup()
 {
-    mSurfaceOrigin = Surface::create( loadImage( loadAsset("testImage2.png" )) );
-    mSurfaceTrim = Surface::create( loadImage( loadAsset("testImage2.png" )) );
-    
-    trim( mSurfaceOrigin, mSurfaceTrim );
-    mTexture = gl::Texture::create( *mSurfaceTrim );
-    
     gl::enableAlphaBlending();
+}
+
+
+void ImageOptimizerApp::renderSceneToFbo(std::vector<ci::gl::TextureRef> textureRefs)
+{
+    std::vector<ci::gl::TextureRef> textures = textureRefs;
+    
+    // save size of loaded images
+    int width = textures[0]->getWidth();
+    int height = textures[0]->getHeight();
+    
+    // create fbo
+    mFbo = gl::Fbo::create(width, height, true);
+    
+    {
+        // bind fbo
+        gl::ScopedFramebuffer fbScp( mFbo );
+        
+        // set viewport and matrices
+        gl::ScopedViewport scpVp( ivec2( 0 ), mFbo->getSize() );
+        gl::ScopedMatrices matricesFbo;
+        gl::setMatricesWindow(width, height);
+        
+        // clear fbo and draw images
+        gl::clear(ColorA(0, 0, 0, 0));
+        gl::color(1, 1, 1);
+        
+        // draw images on fbo
+        for (gl::TextureRef tex: textures) {
+            gl::draw(tex);
+        }
+
+    }
+    
+    // read pixels from fbo
+    SurfaceRef srf = Surface::create(mFbo->readPixels8u( mFbo->getBounds() ));
+    
+//    trim(srf, mSurfaceTrim);
+    mTexture = gl::Texture::create( *srf);
+    
+
 }
 
 void ImageOptimizerApp::mouseDown( MouseEvent event )
@@ -62,29 +103,59 @@ void ImageOptimizerApp::keyDown(KeyEvent event){
 
 void ImageOptimizerApp::fileDrop(FileDropEvent event){
     
-    //    try {
-    //        fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
-    //        if( ! path.empty() ) {
-    //            mSurfaceOrigin = Surface::create( loadImage( path ) );
-    //            mSurfaceTrim = Surface::create( loadImage( path ) );
-    //
-    //        }
-    //    }
-    //    catch( Exception &exc ) {
-    //        CI_LOG_EXCEPTION( "failed to load image.", exc );
-    //    }
+    stringstream ss;
+    ss << "You dropped files @ " << event.getPos() << " and the files were: " << endl;
     
+    for( size_t s = 0; s < event.getNumFiles(); ++s ){
+        const fs::path& path = event.getFile( s );
+        ss << event.getFile( s ) << endl;
+        if(ci::fs::is_directory(path)){
+            
+            //pass the foler of images to FBO
+            renderSceneToFbo(loadImageDirectory( event.getFile( s ) ));
+            console() << ss.str() << endl;
+        }else{
+            console() << "!! WARNING :: not a folder: " <<  ss.str() << endl;
+        }
+    }
 }
 
+ci::gl::TextureRef ImageOptimizerApp::load( const std::string &url, ci::gl::Texture::Format fmt )
+{
+    try{
+        ci::gl::TextureRef t = ci::gl::Texture::create( ci::loadImage( url ), fmt );
+        return t;
+    }
+    catch(...){}
+    ci::app::console() << ci::app::getElapsedSeconds() << ": error loading texture '" << url << "'!" << std::endl;
+    return NULL;
+}
+
+std::vector<ci::gl::TextureRef> ImageOptimizerApp::loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt){
+    
+    std::vector<ci::gl::TextureRef> textureRefs;
+    textureRefs.clear();
+    for ( ci::fs::directory_iterator it( dir ); it != ci::fs::directory_iterator(); ++it ){
+        if ( ci::fs::is_regular_file( *it ) ){
+            // -- Perhaps there is a better way to ignore hidden files
+            std::string fileName = it->path().filename().string();
+            if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
+                ci::gl::TextureRef t = load( dir.string() +"/"+ fileName , fmt );
+                textureRefs.push_back( t );
+            }
+        }
+    }
+    return textureRefs;
+}
 
 void ImageOptimizerApp::trim( SurfaceRef surf, SurfaceRef surfTrim ){
-    
     int trimTop = 0; // number of lines to cut
     int trimBottom = 0;
     int trimLeft = 0;
     int trimRight = 0;
     
     ci::ColorA overlayColor = ColorA(1,0,0,0.3f);
+    mSurfaceOrigin = surf;
     
     bool stop = false;
     for (int y = 0; y < mSurfaceOrigin->getHeight(); y++) {
@@ -163,7 +234,9 @@ void ImageOptimizerApp::draw()
 {
     gl::clear(Color(0,0,0));
     gl::color(1,1,1);
-    gl::draw( mTexture );
+    
+    // draw texture from fbo on screen
+//    gl::draw( mFbo->getColorTexture() );
     
     //    gl::pushMatrices();
     //    gl::translate(20,20);
@@ -171,6 +244,7 @@ void ImageOptimizerApp::draw()
     //    gl::draw( gl::Texture::create(tempSurf) );
     //    gl::popMatrices();
     
+    gl::draw(mTexture);
     gl::color(0,0,1);
     gl::drawStrokedRect( ci::Rectf(mTrimArea) );
     

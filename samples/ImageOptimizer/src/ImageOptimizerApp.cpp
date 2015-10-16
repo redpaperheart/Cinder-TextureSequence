@@ -24,16 +24,18 @@ public:
     void draw() override;
     
     void loadImages(const fs::path& path );
-    void renderSceneToFbo(std::vector<ci::gl::TextureRef> textureRefs);
+    void renderSceneToFbo();
+    void trim();
+    void save();
     
-    void trim( SurfaceRef surf, SurfaceRef surfTrim );
-    
-    SurfaceRef  mSurfaceOrigin;
-    SurfaceRef  mSurfaceTrim;
+
     Area mTrimArea;
-    gl::TextureRef  mTexture;
-    gl::TextureRef  mImgTexure;
+    gl::TextureRef     mResultTexture;
     gl::FboRef      mFbo;
+    
+    std::vector<gl::TextureRef> mTextures;
+    std::vector<SurfaceRef> mSurfaces;
+    std::vector<Area>trimOffsets;
     
     ci::gl::TextureRef load( const std::string &url, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
     std::vector<ci::gl::TextureRef> loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
@@ -50,13 +52,11 @@ void ImageOptimizerApp::setup()
 }
 
 
-void ImageOptimizerApp::renderSceneToFbo(std::vector<ci::gl::TextureRef> textureRefs)
+void ImageOptimizerApp::renderSceneToFbo()
 {
-    std::vector<ci::gl::TextureRef> textures = textureRefs;
-    
     // save size of loaded images
-    int width = textures[0]->getWidth();
-    int height = textures[0]->getHeight();
+    int width = mTextures[0]->getWidth();
+    int height = mTextures[0]->getHeight();
     
     // create fbo
     mFbo = gl::Fbo::create(width, height, true);
@@ -75,19 +75,18 @@ void ImageOptimizerApp::renderSceneToFbo(std::vector<ci::gl::TextureRef> texture
         gl::color(1, 1, 1);
         
         // draw images on fbo
-        for (gl::TextureRef tex: textures) {
+        for (gl::TextureRef tex: mTextures) {
             gl::draw(tex);
         }
 
     }
     
     // read pixels from fbo
-    SurfaceRef srf = Surface::create(mFbo->readPixels8u( mFbo->getBounds() ));
+//    SurfaceRef srf = Surface::create(mFbo->readPixels8u( mFbo->getBounds() ));
+//    mTexture = gl::Texture::create( *srf);
     
-//    trim(srf, mSurfaceTrim);
-    mTexture = gl::Texture::create( *srf);
-    
-
+    //read overlayed texuture from fbo
+    mResultTexture = mFbo->getColorTexture();
 }
 
 void ImageOptimizerApp::mouseDown( MouseEvent event )
@@ -95,9 +94,13 @@ void ImageOptimizerApp::mouseDown( MouseEvent event )
 }
 
 void ImageOptimizerApp::keyDown(KeyEvent event){
+
+    if (event.getChar() == 't') {
+            trim();// trim to export
+    }
+    
     if (event.getChar() == 's') {
-        Surface tempSurf = mSurfaceTrim->clone(mTrimArea);
-        writeImage( getAppPath() / "trimmed.png", tempSurf );
+        save();// trim to export
     }
 }
 
@@ -112,7 +115,8 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
         if(ci::fs::is_directory(path)){
             
             //pass the foler of images to FBO
-            renderSceneToFbo(loadImageDirectory( event.getFile( s ) ));
+            loadImageDirectory( event.getFile( s ) );
+            renderSceneToFbo();// visualize
             console() << ss.str() << endl;
         }else{
             console() << "!! WARNING :: not a folder: " <<  ss.str() << endl;
@@ -140,88 +144,104 @@ std::vector<ci::gl::TextureRef> ImageOptimizerApp::loadImageDirectory(ci::fs::pa
             // -- Perhaps there is a better way to ignore hidden files
             std::string fileName = it->path().filename().string();
             if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
-                ci::gl::TextureRef t = load( dir.string() +"/"+ fileName , fmt );
-                textureRefs.push_back( t );
+                
+                // load dropped images
+                std::string path = dir.string() + "/" + fileName;
+                SurfaceRef surf = Surface::create(loadImage(path));
+                gl::TextureRef tex = gl::Texture::create(*surf);
+                
+                // save them in vector
+                mTextures.push_back(tex);
+                mSurfaces.push_back(surf);
             }
         }
     }
     return textureRefs;
 }
 
-void ImageOptimizerApp::trim( SurfaceRef surf, SurfaceRef surfTrim ){
-    int trimTop = 0; // number of lines to cut
+void ImageOptimizerApp::trim(){
+    // number of lines to cut
+    int trimTop = 0;
     int trimBottom = 0;
     int trimLeft = 0;
     int trimRight = 0;
     
-    ci::ColorA overlayColor = ColorA(1,0,0,0.3f);
-    mSurfaceOrigin = surf;
-    
-    bool stop = false;
-    for (int y = 0; y < mSurfaceOrigin->getHeight(); y++) {
-        for (int x =0; x < mSurfaceOrigin->getWidth(); x++) {
-            ci::ColorA c = mSurfaceOrigin->getPixel( vec2(x, y) );
-            if ( c.a > 0.0f ) {
-                trimTop = y;
-                stop = true;
-                break;
-            }else{
-                mSurfaceTrim->setPixel( vec2(x, y), overlayColor);
+    //get the pixels need to be trimmed for each surface with 4 loops
+    for (SurfaceRef surf:mSurfaces) {
+        bool stop = false;
+        //go thru pixels from top
+        for (int y = 0; y < surf->getHeight(); y++) {
+            for (int x =0; x < surf->getWidth(); x++) {
+                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                //stop at the first non-transparent pixel
+                if ( c.a > 0.0f ) {
+                    trimTop = y;
+                    stop = true;
+                    break;
+                }
             }
+            if( stop ) break;
         }
-        if( stop ) break;
-    }
-    
-    stop = false;
-    for (int y = mSurfaceOrigin->getHeight() -1; y >=  0; y--) {
-        for (int x =0; x < mSurfaceOrigin->getWidth(); x++) {
-            ci::ColorA c = mSurfaceOrigin->getPixel( vec2(x, y) );
-            if ( c.a > 0.0f ) {
-                trimBottom = y+1;
-                stop = true;
-                break;
-            }else{
-                mSurfaceTrim->setPixel( vec2(x, y), overlayColor );
+        
+        //go thru from bottom
+        stop = false;
+        for (int y = surf->getHeight() -1; y >=  0; y--) {
+            for (int x =0; x < surf->getWidth(); x++) {
+                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                if ( c.a > 0.0f ) {
+                    trimBottom = y+1;
+                    stop = true;
+                    break;
+                }
             }
+            if( stop ) break;
         }
-        if( stop ) break;
-    }
-    
-    stop = false;
-    for (int x = 0; x < mSurfaceOrigin-> getWidth(); x++) {
-        for (int y =0; y < mSurfaceOrigin->getHeight(); y++) {
-            ci::ColorA c = mSurfaceOrigin->getPixel( vec2(x, y) );
-            if ( c.a > 0.0f ) {
-                trimLeft = x;
-                stop = true;
-                break;
-            }else{
-                mSurfaceTrim->setPixel( vec2(x, y), overlayColor );
+        
+        //go thru from left
+        stop = false;
+        for (int x = 0; x < surf-> getWidth(); x++) {
+            for (int y =0; y < surf->getHeight(); y++) {
+                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                if ( c.a > 0.0f ) {
+                    trimLeft = x;
+                    stop = true;
+                    break;
+                }
             }
+            if( stop ) break;
         }
-        if( stop ) break;
-    }
-    
-    stop = false;
-    for (int x = mSurfaceOrigin->getWidth()-1; x >= 0; x--) {
-        for (int y =0; y < mSurfaceOrigin->getHeight(); y++) {
-            ci::ColorA c = mSurfaceOrigin->getPixel( vec2(x, y) );
-            if ( c.a > 0.0f ) {
-                trimRight = x+1;
-                stop = true;
-                break;
-            }else{
-                mSurfaceTrim->setPixel( vec2(x, y), overlayColor );
+        
+        //from right
+        stop = false;
+        for (int x = surf->getWidth()-1; x >= 0; x--) {
+            for (int y =0; y < surf->getHeight(); y++) {
+                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                if ( c.a > 0.0f ) {
+                    trimRight = x+1;
+                    stop = true;
+                    break;
+                }
             }
+            if( stop ) break;
         }
-        if( stop ) break;
+        
+        //pixel offsets need to be trimmed for each image
+        mTrimArea = Area(trimLeft, trimTop, trimRight, trimBottom);
+        //push to vector holds all the trim offsets
+        trimOffsets.push_back(mTrimArea);
     }
-    
-    mTrimArea = Area(trimLeft, trimTop, trimRight, trimBottom);
-    
     cout<<"trimTop: " << trimTop << "trimBottom: " << trimBottom << "trimLeft: " <<trimLeft <<"trimRight: "<< trimRight<< std::endl;
-    
-    
+}
+
+void ImageOptimizerApp::save(){
+    //go thru each surface
+    for (int i = 0; i < mSurfaces.size();i++) {
+        //only clone the non-transparent area based on the offsets
+        Surface tempSurf = mSurfaces[i]->clone(trimOffsets[i]);
+        //save them to desktop folder trimmed
+        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / (toString(i) + ".png");
+        writeImage( path, tempSurf );
+    }
 }
 
 
@@ -234,20 +254,11 @@ void ImageOptimizerApp::draw()
 {
     gl::clear(Color(0,0,0));
     gl::color(1,1,1);
-    
-    // draw texture from fbo on screen
-//    gl::draw( mFbo->getColorTexture() );
-    
-    //    gl::pushMatrices();
-    //    gl::translate(20,20);
-    //    Surface tempSurf = mSurfaceTrim->clone(mTrimArea);
-    //    gl::draw( gl::Texture::create(tempSurf) );
-    //    gl::popMatrices();
-    
-    gl::draw(mTexture);
+    gl::draw(mResultTexture);
     gl::color(0,0,1);
-    gl::drawStrokedRect( ci::Rectf(mTrimArea) );
-    
+    for (Area trimArea : trimOffsets) {
+        gl::drawStrokedRect(ci::Rectf(trimArea));
+    }
 }
 
 CINDER_APP( ImageOptimizerApp, RendererGl, ImageOptimizerApp::prepareSettings )

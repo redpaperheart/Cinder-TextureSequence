@@ -4,6 +4,7 @@
 #include "cinder/Log.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
+#include "cinder/Json.h"
 
 
 
@@ -27,6 +28,7 @@ public:
     void renderSceneToFbo();
     void trim();
     void save();
+    void saveJson();
     
 
     Area mTrimArea;
@@ -242,8 +244,27 @@ void ImageOptimizerApp::save(){
         fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / (toString(i) + ".png");
         writeImage( path, tempSurf );
     }
+    saveJson();
 }
 
+void ImageOptimizerApp::saveJson(){
+    //save the offsets for each image into a json file
+    JsonTree images = JsonTree::makeArray("images");
+    for (int i = 0; i < trimOffsets.size(); i ++) {
+        JsonTree curImage = JsonTree::makeObject();
+        
+
+        curImage.pushBack(JsonTree("trimLeft", trimOffsets[i].x1));
+        curImage.pushBack(JsonTree("trimTop", trimOffsets[i].x2));
+        curImage.pushBack(JsonTree("trimRight", trimOffsets[i].y1));
+        curImage.pushBack(JsonTree("trimBottom", trimOffsets[i].y2));
+        
+        images.pushBack(curImage);
+    }
+    images.write( writeFile( app::getAssetPath("trimOffsets.json")), JsonTree::WriteOptions() );
+    
+    
+}
 
 void ImageOptimizerApp::update()
 {

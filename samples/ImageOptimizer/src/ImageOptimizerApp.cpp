@@ -250,18 +250,19 @@ void ImageOptimizerApp::save(){
 void ImageOptimizerApp::saveJson(){
     //save the offsets for each image into a json file
     JsonTree images = JsonTree::makeArray("images");
+    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "offsets.json";
     for (int i = 0; i < trimOffsets.size(); i ++) {
         JsonTree curImage = JsonTree::makeObject();
         
-
-        curImage.pushBack(JsonTree("trimLeft", trimOffsets[i].x1));
-        curImage.pushBack(JsonTree("trimTop", trimOffsets[i].x2));
-        curImage.pushBack(JsonTree("trimRight", trimOffsets[i].y1));
-        curImage.pushBack(JsonTree("trimBottom", trimOffsets[i].y2));
+        curImage.pushBack(JsonTree("left", trimOffsets[i].x1));
+        curImage.pushBack(JsonTree("top", trimOffsets[i].y1));
+        curImage.pushBack(JsonTree("right", trimOffsets[i].x2));
+        curImage.pushBack(JsonTree("bottom", trimOffsets[i].y2));
+        curImage.pushBack(JsonTree("image", i));
         
         images.pushBack(curImage);
     }
-    images.write( writeFile( app::getAssetPath("trimOffsets.json")), JsonTree::WriteOptions() );
+    images.write( jsonPath, JsonTree::WriteOptions());
     
     
 }

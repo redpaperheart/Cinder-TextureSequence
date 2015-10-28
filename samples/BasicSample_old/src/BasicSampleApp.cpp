@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/gl/gl.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BasicSampleApp : public AppNative {
+class BasicSampleApp : public App {
   public:
 	void setup();
 	void update();
@@ -93,7 +93,7 @@ std::vector<ci::gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(ci::fs:
 {
     std::vector<ci::gl::TextureRef> textureRefs;
     if( !ci::fs::exists( dir ) ){
-        dir = ci::app::App::getResourcePath() / dir;
+        dir = cinder::app::Platform::getResourcePath() / dir;
         if( !ci::fs::exists(dir) ){
             ci::app::console() << "rph::TextureStore::loadImageDirectory - ERROR - ("<< dir << ") Folder does not Exist!" << std::endl;
             return textureRefs;
@@ -144,4 +144,4 @@ std::vector<ci::gl::TextureRef> BasicSampleApp::createTextureRefsFromDir(ci::fs:
 //    totalFrames = textures.size();
 //}
 
-CINDER_APP_NATIVE( BasicSampleApp, RendererGl )
+CINDER_APP( BasicSampleApp, RendererGl )

@@ -19,6 +19,8 @@ class SequencePreviewApp : public App {
     void cleanup() override;
     void fileDrop( FileDropEvent event ) override;
     void addNewSequence( const fs::path& path );
+    
+    std::vector<ivec2>     mOffsets;//vector holds all the images offsets
 
     ci::gl::TextureRef load( const std::string &url, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
     std::vector<ci::gl::TextureRef> loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
@@ -67,10 +69,29 @@ void SequencePreviewApp::fileDrop( FileDropEvent event ){
     for( size_t s = 0; s < event.getNumFiles(); ++s ){
         const fs::path& path = event.getFile( s );
         ss << event.getFile( s ) << endl;
+
         if(ci::fs::is_directory(path)){
+            
             addNewSequence( event.getFile( s ) );
+            
+            // check for json file
+            // load the json
+            const JsonTree jsonFile = ci::JsonTree( ci::app::loadAsset( "trimmed/sequence.json" ));
+            
+            // loop through the json sequence and fill the mOffsets vector
+            for( auto itr = jsonFile["sequence"].begin(); itr != jsonFile["sequence"].end(); itr++){
+                ivec2 tempVec;
+                tempVec.x = (*itr)["x"].getValue<int>();
+                tempVec.y = (*itr)["y"].getValue<int>();
+                mOffsets.push_back(tempVec);
+            }
             console() << ss.str() << endl;
-        }else{
+        }
+        //else if( is json file names sequence.json ){
+            // do stuff
+        //}
+        else{
+            
             console() << "!! WARNING :: not a folder: " <<  ss.str() << endl;
         }
     }
@@ -82,9 +103,10 @@ void SequencePreviewApp::addNewSequence( const fs::path& path )
     
     // create and add a new one.
     mSequence = new rph::TextureSequence();
-    mSequence->setup(loadImageDirectory( path ));
+    mSequence->setup( loadImageDirectory( path ) );
     mSequence->setLoop(true);
     mSequence->play();
+    
 }
 
 void SequencePreviewApp::update()
@@ -107,6 +129,9 @@ void SequencePreviewApp::draw()
         gl::ScopedMatrices m;
         gl::translate( getWindowCenter() -  vec2(mSequence->getCurrentTexture()->getSize())/vec2(2.0f));
         gl::color(ColorA(1,1,1,1));
+        
+        gl::translate( mOffsets[ mSequence->getPlayheadPosition() ] );
+        
         gl::draw( mSequence->getCurrentTexture() );
         gl::color(ColorA(1,0,0,1));
         gl::drawStrokedRect(mSequence->getCurrentTexture()->getBounds());
@@ -135,7 +160,15 @@ std::vector<ci::gl::TextureRef> SequencePreviewApp::loadImageDirectory(ci::fs::p
         if ( ci::fs::is_regular_file( *it ) ){
             // -- Perhaps there is a better way to ignore hidden files
             std::string fileName = it->path().filename().string();
-            if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
+            
+            // this might give you an error when trying to load the json file
+            
+//            if( !( fileName.compare( ".DS_Store" ) == 0 ) && !( fileName.compare( ".json" ) == 0 ) ){
+//                ci::gl::TextureRef t = load( dir.string() +"/"+ fileName , fmt );
+//                textureRefs.push_back( t );
+//            }
+            
+            if(  fileName.compare( fileName.size()-4 , 4 , ".png" ) == 0  ){
                 ci::gl::TextureRef t = load( dir.string() +"/"+ fileName , fmt );
                 textureRefs.push_back( t );
             }

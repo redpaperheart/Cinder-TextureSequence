@@ -5,6 +5,8 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/Json.h"
+#include "cinder/params/Params.h"
+
 
 
 
@@ -31,13 +33,18 @@ public:
     void saveJson();
     
 
-    Area mTrimArea;
-    gl::TextureRef     mResultTexture;
-    gl::FboRef      mFbo;
+    Area                mTrimArea;
+    Area                mOriOutline;
+    gl::TextureRef      mResultTexture;
+    gl::FboRef          mFbo;
     
-    std::vector<gl::TextureRef> mTextures;
-    std::vector<SurfaceRef> mSurfaces;
-    std::vector<Area>trimOffsets;
+    cinder::params::InterfaceGl     mParams;
+    
+    std::vector<gl::TextureRef>     mTextures;//texture vector holds all the dropped images for overlaped dipsplay
+    std::vector<SurfaceRef>         mSurfaces;//surfaces to hold all the images for trimming
+    std::vector<Area>               mTrimOffsets;//the amount of pixels to trim for each image
+    std::vector<string>             mFileNames;//vector to store origin file names
+    
     
     ci::gl::TextureRef load( const std::string &url, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
     std::vector<ci::gl::TextureRef> loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
@@ -50,6 +57,9 @@ void ImageOptimizerApp::prepareSettings( Settings *settings ){
 
 void ImageOptimizerApp::setup()
 {
+    mParams = ci::params::InterfaceGl( "Settings", vec2(200,200) );
+    mParams.addButton( "showTrim", bind( &ImageOptimizerApp::trim, this ) );
+    mParams.addButton( "saveFiles", bind( &ImageOptimizerApp::save, this ) );
     gl::enableAlphaBlending();
 }
 
@@ -59,6 +69,8 @@ void ImageOptimizerApp::renderSceneToFbo()
     // save size of loaded images
     int width = mTextures[0]->getWidth();
     int height = mTextures[0]->getHeight();
+    
+    mOriOutline = Area(0,0,width, height);
     
     // create fbo
     mFbo = gl::Fbo::create(width, height, true);
@@ -82,10 +94,6 @@ void ImageOptimizerApp::renderSceneToFbo()
         }
 
     }
-    
-    // read pixels from fbo
-//    SurfaceRef srf = Surface::create(mFbo->readPixels8u( mFbo->getBounds() ));
-//    mTexture = gl::Texture::create( *srf);
     
     //read overlayed texuture from fbo
     mResultTexture = mFbo->getColorTexture();
@@ -155,6 +163,9 @@ std::vector<ci::gl::TextureRef> ImageOptimizerApp::loadImageDirectory(ci::fs::pa
                 // save them in vector
                 mTextures.push_back(tex);
                 mSurfaces.push_back(surf);
+                
+                //save the names in vector
+                mFileNames.push_back(fileName);
             }
         }
     }
@@ -230,7 +241,7 @@ void ImageOptimizerApp::trim(){
         //pixel offsets need to be trimmed for each image
         mTrimArea = Area(trimLeft, trimTop, trimRight, trimBottom);
         //push to vector holds all the trim offsets
-        trimOffsets.push_back(mTrimArea);
+        mTrimOffsets.push_back(mTrimArea);
     }
     cout<<"trimTop: " << trimTop << "trimBottom: " << trimBottom << "trimLeft: " <<trimLeft <<"trimRight: "<< trimRight<< std::endl;
 }
@@ -239,9 +250,9 @@ void ImageOptimizerApp::save(){
     //go thru each surface
     for (int i = 0; i < mSurfaces.size();i++) {
         //only clone the non-transparent area based on the offsets
-        Surface tempSurf = mSurfaces[i]->clone(trimOffsets[i]);
+        Surface tempSurf = mSurfaces[i]->clone(mTrimOffsets[i]);
         //save them to desktop folder trimmed
-        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / (toString(i) + ".png");
+        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / toString(mFileNames[i]);
         writeImage( path, tempSurf );
     }
     saveJson();
@@ -249,20 +260,18 @@ void ImageOptimizerApp::save(){
 
 void ImageOptimizerApp::saveJson(){
     //save the offsets for each image into a json file
-    JsonTree images = JsonTree::makeArray("images");
-    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "offsets.json";
-    for (int i = 0; i < trimOffsets.size(); i ++) {
+    JsonTree doc = JsonTree::makeObject();
+    JsonTree sequence = JsonTree::makeArray("sequence");
+    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "sequence.json";
+    for (int i = 0; i < mTrimOffsets.size(); i ++) {
         JsonTree curImage = JsonTree::makeObject();
-        
-        curImage.pushBack(JsonTree("left", trimOffsets[i].x1));
-        curImage.pushBack(JsonTree("top", trimOffsets[i].y1));
-        curImage.pushBack(JsonTree("right", trimOffsets[i].x2));
-        curImage.pushBack(JsonTree("bottom", trimOffsets[i].y2));
-        curImage.pushBack(JsonTree("image", i));
-        
-        images.pushBack(curImage);
+        curImage.pushBack(JsonTree("x", mTrimOffsets[i].x1));
+        curImage.pushBack(JsonTree("y", mTrimOffsets[i].y1));
+        curImage.pushBack(JsonTree("fileName", mFileNames[i] ));
+        sequence.pushBack(curImage);
     }
-    images.write( jsonPath, JsonTree::WriteOptions());
+    doc.pushBack(sequence);
+    doc.write( jsonPath, JsonTree::WriteOptions());
     
     
 }
@@ -278,9 +287,14 @@ void ImageOptimizerApp::draw()
     gl::color(1,1,1);
     gl::draw(mResultTexture);
     gl::color(0,0,1);
-    for (Area trimArea : trimOffsets) {
+    for (Area trimArea : mTrimOffsets) {
         gl::drawStrokedRect(ci::Rectf(trimArea));
     }
+    gl::color(1, 0, 0);
+    gl::drawStrokedRect(ci::Rectf(mOriOutline));
+    
+    // Draw the interface
+    mParams.draw();
 }
 
 CINDER_APP( ImageOptimizerApp, RendererGl, ImageOptimizerApp::prepareSettings )

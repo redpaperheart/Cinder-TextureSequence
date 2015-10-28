@@ -74,16 +74,23 @@ void SequencePreviewApp::fileDrop( FileDropEvent event ){
             
             addNewSequence( event.getFile( s ) );
             
-            // check for json file
-            // load the json
-            const JsonTree jsonFile = ci::JsonTree( ci::app::loadAsset( "trimmed/sequence.json" ));
+            mOffsets.clear();
             
-            // loop through the json sequence and fill the mOffsets vector
-            for( auto itr = jsonFile["sequence"].begin(); itr != jsonFile["sequence"].end(); itr++){
-                ivec2 tempVec;
-                tempVec.x = (*itr)["x"].getValue<int>();
-                tempVec.y = (*itr)["y"].getValue<int>();
-                mOffsets.push_back(tempVec);
+            // check if there's json file in the folder you just droppped.
+            if( ci::fs::exists( path / "sequence.json" ) ){
+                console() << "JSON EXISTS" << endl;
+                // load the json
+                const JsonTree jsonFile = ci::JsonTree( ci::loadFile( path/"sequence.json") );
+            
+                // loop through the json sequence and fill the mOffsets vector
+                for( auto itr = jsonFile["sequence"].begin(); itr != jsonFile["sequence"].end(); itr++){
+                    ivec2 tempVec;
+                    tempVec.x = (*itr)["x"].getValue<int>();
+                    tempVec.y = (*itr)["y"].getValue<int>();
+                    mOffsets.push_back(tempVec);
+                }
+            }else{
+                console() << "JSON DOES NOT EXISTS" << endl;
             }
             console() << ss.str() << endl;
         }
@@ -127,10 +134,11 @@ void SequencePreviewApp::draw()
     
     if(mSequence){
         gl::ScopedMatrices m;
-        gl::translate( getWindowCenter() -  vec2(mSequence->getCurrentTexture()->getSize())/vec2(2.0f));
-        gl::color(ColorA(1,1,1,1));
         
-        gl::translate( mOffsets[ mSequence->getPlayheadPosition() ] );
+        //gl::translate( getWindowCenter() -  vec2(mSequence->getCurrentTexture()->getSize())/vec2(2.0f));
+        gl::color(ColorA(1,1,1,1));
+        if( mOffsets.size() > 0 )
+            gl::translate( mOffsets[ mSequence->getPlayheadPosition() ] );
         
         gl::draw( mSequence->getCurrentTexture() );
         gl::color(ColorA(1,0,0,1));

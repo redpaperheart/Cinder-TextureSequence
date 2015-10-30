@@ -6,6 +6,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/Json.h"
 #include "cinder/params/Params.h"
+#include "TextureSequence.h"
 
 
 
@@ -21,7 +22,6 @@ public:
     static void prepareSettings( Settings *settings);
     void setup() override;
     void mouseDown( MouseEvent event ) override;
-    void keyDown( KeyEvent event ) override;
     void fileDrop( FileDropEvent event ) override;
     void update() override;
     void draw() override;
@@ -29,14 +29,23 @@ public:
     void loadImages(const fs::path& path );
     void renderSceneToFbo();
     void trim();
-    void save();
+    void showMaxTrim();
+    void minTrim();
+    void showBoth();
+    void saveMax();
+    void saveMin();
     void saveJson();
+    void showAnimation();
+    void play(const fs::path& path);
     
+    bool bTrimmed = false, bMinTrim = false, bMaxTrim = false, bPlay = false;
 
     Area                mTrimArea;
     Area                mOriOutline;
     gl::TextureRef      mResultTexture;
     gl::FboRef          mFbo;
+    
+    rph::TextureSequence *mSequence = NULL;//texture sequencer
     
     cinder::params::InterfaceGl     mParams;
     
@@ -58,8 +67,13 @@ void ImageOptimizerApp::prepareSettings( Settings *settings ){
 void ImageOptimizerApp::setup()
 {
     mParams = ci::params::InterfaceGl( "Settings", vec2(200,200) );
-    mParams.addButton( "showTrim", bind( &ImageOptimizerApp::trim, this ) );
-    mParams.addButton( "saveFiles", bind( &ImageOptimizerApp::save, this ) );
+    mParams.addButton( "ShowMax", bind( &ImageOptimizerApp::showMaxTrim, this ) );
+    mParams.addButton( "ShowMin", bind( &ImageOptimizerApp::minTrim, this ) );
+    mParams.addButton( "ShowBoth", bind( &ImageOptimizerApp::showBoth, this ) );
+    mParams.addButton( "play", bind( &ImageOptimizerApp::showAnimation, this ) );
+    mParams.addButton( "SaveMaxTrim", bind( &ImageOptimizerApp::saveMax, this ) );
+    mParams.addButton( "SaveMinTrim", bind( &ImageOptimizerApp::saveMin, this ) );
+    
     gl::enableAlphaBlending();
 }
 
@@ -97,25 +111,21 @@ void ImageOptimizerApp::renderSceneToFbo()
     
     //read overlayed texuture from fbo
     mResultTexture = mFbo->getColorTexture();
+    trim();
+    bMaxTrim = true;
+    bMinTrim = true;
+    
 }
 
 void ImageOptimizerApp::mouseDown( MouseEvent event )
 {
 }
 
-void ImageOptimizerApp::keyDown(KeyEvent event){
-
-    if (event.getChar() == 't') {
-            trim();// trim to export
-    }
-    
-    if (event.getChar() == 's') {
-        save();// trim to export
-    }
-}
 
 void ImageOptimizerApp::fileDrop(FileDropEvent event){
-    
+    mTrimOffsets.clear();
+    mTrimArea = Area(0,0,0,0);
+    bTrimmed = false;
     stringstream ss;
     ss << "You dropped files @ " << event.getPos() << " and the files were: " << endl;
     
@@ -124,6 +134,7 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
         ss << event.getFile( s ) << endl;
         if(ci::fs::is_directory(path)){
             
+            play( event.getFile( s ) );
             //pass the foler of images to FBO
             loadImageDirectory( event.getFile( s ) );
             renderSceneToFbo();// visualize
@@ -146,6 +157,11 @@ ci::gl::TextureRef ImageOptimizerApp::load( const std::string &url, ci::gl::Text
 }
 
 std::vector<ci::gl::TextureRef> ImageOptimizerApp::loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt){
+    
+    mTextures.clear();
+    mSurfaces.clear();
+    mFileNames.clear();
+    
     
     std::vector<ci::gl::TextureRef> textureRefs;
     textureRefs.clear();
@@ -172,7 +188,10 @@ std::vector<ci::gl::TextureRef> ImageOptimizerApp::loadImageDirectory(ci::fs::pa
     return textureRefs;
 }
 
+
+//trim to the max amount for each image.
 void ImageOptimizerApp::trim(){
+
     // number of lines to cut
     int trimTop = 0;
     int trimBottom = 0;
@@ -243,26 +262,89 @@ void ImageOptimizerApp::trim(){
         //push to vector holds all the trim offsets
         mTrimOffsets.push_back(mTrimArea);
     }
-    cout<<"trimTop: " << trimTop << "trimBottom: " << trimBottom << "trimLeft: " <<trimLeft <<"trimRight: "<< trimRight<< std::endl;
+    bTrimmed = true;
 }
 
-void ImageOptimizerApp::save(){
+void ImageOptimizerApp::showMaxTrim(){
+    bMinTrim = false;
+    if (bTrimmed) {
+        bMaxTrim = true;
+    }else{
+        trim();
+        bMaxTrim = true;
+    }
+}
+
+//trim minimum amount of pixels
+void ImageOptimizerApp::minTrim(){
+    if (!bTrimmed) {
+        trim();
+    }
+    int tempX1 = mTrimOffsets[0].x1;
+    int tempY1 = mTrimOffsets[0].y1;
+    int tempX2 = 0;
+    int tempY2 = 0;
+    
+    for (int i =1; i < mTrimOffsets.size(); i++) {
+        if (mTrimOffsets[i].x1 < tempX1) {
+            tempX1 = mTrimOffsets[i].x1;
+        }
+        
+        if (mTrimOffsets[i].y1 < tempY1) {
+            tempY1 = mTrimOffsets[i].y1;
+        }
+    }
+    
+    for (int i =0; i < mTrimOffsets.size(); i++) {
+        if (mTrimOffsets[i].x2 > tempX2) {
+            tempX2 = mTrimOffsets[i].x2;
+        }
+        
+        if (mTrimOffsets[i].y2 > tempY2) {
+            tempY2 = mTrimOffsets[i].y2;
+        }
+    }
+    
+    mTrimArea = Area(tempX1, tempY1, tempX2, tempY2);
+    console()<<"mTrimArea"<<mTrimArea<<endl;
+    bMaxTrim = false;
+    bMinTrim = true;
+    
+}
+
+void ImageOptimizerApp::showBoth(){
+    bMaxTrim = true;
+    bMinTrim = true;
+}
+
+void ImageOptimizerApp::saveMax(){
     //go thru each surface
     for (int i = 0; i < mSurfaces.size();i++) {
         //only clone the non-transparent area based on the offsets
         Surface tempSurf = mSurfaces[i]->clone(mTrimOffsets[i]);
         //save them to desktop folder trimmed
-        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / toString(mFileNames[i]);
+        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / "max" / toString(mFileNames[i]);
         writeImage( path, tempSurf );
     }
     saveJson();
+}
+
+void ImageOptimizerApp::saveMin(){
+    //go thru each surface
+    for (int i = 0; i < mSurfaces.size();i++) {
+        //only clone the non-transparent area based on the offsets
+        Surface tempSurf = mSurfaces[i]->clone(mTrimArea);
+        //save them to desktop folder trimmed
+        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / "min" / toString(mFileNames[i]);
+        writeImage( path, tempSurf);
+    }
 }
 
 void ImageOptimizerApp::saveJson(){
     //save the offsets for each image into a json file
     JsonTree doc = JsonTree::makeObject();
     JsonTree sequence = JsonTree::makeArray("sequence");
-    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "sequence.json";
+    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "max" / "sequence.json";
     for (int i = 0; i < mTrimOffsets.size(); i ++) {
         JsonTree curImage = JsonTree::makeObject();
         curImage.pushBack(JsonTree("x", mTrimOffsets[i].x1));
@@ -272,13 +354,27 @@ void ImageOptimizerApp::saveJson(){
     }
     doc.pushBack(sequence);
     doc.write( jsonPath, JsonTree::WriteOptions());
-    
-    
 }
+
+void ImageOptimizerApp::showAnimation(){
+    bPlay = true;
+}
+
+void ImageOptimizerApp::play(const fs::path& path){
+    
+    mSequence = new rph::TextureSequence();
+    mSequence->setup( loadImageDirectory( path ) );
+    mSequence->setLoop(true);
+    if (bPlay) {
+        mSequence->play();
+    }
+};
 
 void ImageOptimizerApp::update()
 {
-    
+    if(mSequence){
+        mSequence->update();
+    }
 }
 
 void ImageOptimizerApp::draw()
@@ -286,9 +382,22 @@ void ImageOptimizerApp::draw()
     gl::clear(Color(0,0,0));
     gl::color(1,1,1);
     gl::draw(mResultTexture);
-    gl::color(0,0,1);
-    for (Area trimArea : mTrimOffsets) {
-        gl::drawStrokedRect(ci::Rectf(trimArea));
+    if (bMinTrim) {
+        gl::color(1, 0, 0);
+        gl::drawSolidRect(ci::Rectf(mOriOutline.x1,mOriOutline.y1, mOriOutline.x2, mTrimArea.y1));
+        gl::drawSolidRect(ci::Rectf(mOriOutline.x1,mOriOutline.y1, mTrimArea.x1, mOriOutline.y2));
+        gl::drawSolidRect(ci::Rectf(mOriOutline.x1,mTrimArea.y2, mOriOutline.x2, mOriOutline.y2));
+        gl::drawSolidRect(ci::Rectf(mTrimArea.x2,mOriOutline.y1, mOriOutline.x2, mOriOutline.y2));
+    }
+    if(bMaxTrim){
+        gl::color(0,0,1);
+        for (Area trimArea : mTrimOffsets) {
+            gl::drawStrokedRect(ci::Rectf(trimArea));
+        }
+    }
+    if(mSequence){
+        gl::color(ColorA(1,1,1,1));
+        gl::draw( mSequence->getCurrentTexture() );
     }
     gl::color(1, 0, 0);
     gl::drawStrokedRect(ci::Rectf(mOriOutline));

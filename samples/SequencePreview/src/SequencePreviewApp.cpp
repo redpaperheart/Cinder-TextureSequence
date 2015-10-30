@@ -171,11 +171,6 @@ std::vector<ci::gl::TextureRef> SequencePreviewApp::loadImageDirectory(ci::fs::p
             
             // this might give you an error when trying to load the json file
             
-//            if( !( fileName.compare( ".DS_Store" ) == 0 ) && !( fileName.compare( ".json" ) == 0 ) ){
-//                ci::gl::TextureRef t = load( dir.string() +"/"+ fileName , fmt );
-//                textureRefs.push_back( t );
-//            }
-            
             if(  fileName.compare( fileName.size()-4 , 4 , ".png" ) == 0  ){
                 ci::gl::TextureRef t = load( dir.string() +"/"+ fileName , fmt );
                 textureRefs.push_back( t );

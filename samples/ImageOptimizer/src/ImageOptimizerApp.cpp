@@ -132,14 +132,15 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
     for( size_t s = 0; s < event.getNumFiles(); ++s ){
         const fs::path& path = event.getFile( s );
         ss << event.getFile( s ) << endl;
-        if(ci::fs::is_directory(path)){
-            
-            play( event.getFile( s ) );
-            //pass the foler of images to FBO
+        if (ci::fs::is_directory(path)) {
+          
             loadImageDirectory( event.getFile( s ) );
             renderSceneToFbo();// visualize
+            play( event.getFile( s ) );
             console() << ss.str() << endl;
-        }else{
+
+        }
+        else{
             console() << "!! WARNING :: not a folder: " <<  ss.str() << endl;
         }
     }
@@ -167,10 +168,12 @@ std::vector<ci::gl::TextureRef> ImageOptimizerApp::loadImageDirectory(ci::fs::pa
     textureRefs.clear();
     for ( ci::fs::directory_iterator it( dir ); it != ci::fs::directory_iterator(); ++it ){
         if ( ci::fs::is_regular_file( *it ) ){
-            // -- Perhaps there is a better way to ignore hidden files
+            // -- Perhaps there is  a better way to ignore hidden files
+            ci::fs::path fileExtention = it->path().extension();
             std::string fileName = it->path().filename().string();
-            if( !( fileName.compare( ".DS_Store" ) == 0 ) ){
-                
+            
+            //check the droped files are png images only
+            if( fileExtention == ".png" ){
                 // load dropped images
                 std::string path = dir.string() + "/" + fileName;
                 SurfaceRef surf = Surface::create(loadImage(path));
@@ -261,6 +264,7 @@ void ImageOptimizerApp::trim(){
         mTrimArea = Area(trimLeft, trimTop, trimRight, trimBottom);
         //push to vector holds all the trim offsets
         mTrimOffsets.push_back(mTrimArea);
+
     }
     bTrimmed = true;
 }

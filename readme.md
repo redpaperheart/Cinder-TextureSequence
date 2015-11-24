@@ -6,12 +6,12 @@ A helpful class to controle an image sequence.
 
 Work in progress /  Todo:
 --------
- * use TextureRef instead of pointers
+ * To only load image files
+ * Ask for the saving destination
+ * Test loading time and memory usage, shows the outcome in app
  * possibility to switch between timeline and "on update calls"
  * clean up code
  * add some more comments
- * add block xml file
- * create samples 
  * QA
 
 

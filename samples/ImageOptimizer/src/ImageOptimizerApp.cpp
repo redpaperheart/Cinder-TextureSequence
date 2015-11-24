@@ -34,7 +34,7 @@ public:
     void showBoth();
     void saveMax();
     void saveMin();
-    void saveJson();
+    void saveJson(const fs::path& path);
     void showAnimation();
     void play(const fs::path& path);
     
@@ -171,21 +171,20 @@ std::vector<ci::gl::TextureRef> ImageOptimizerApp::loadImageDirectory(ci::fs::pa
             // -- Perhaps there is  a better way to ignore hidden files
             ci::fs::path fileExtention = it->path().extension();
             std::string fileName = it->path().filename().string();
-            
-            //check the droped files are png images only
-            if( fileExtention == ".png" ){
-                // load dropped images
-                std::string path = dir.string() + "/" + fileName;
-                SurfaceRef surf = Surface::create(loadImage(path));
-                gl::TextureRef tex = gl::Texture::create(*surf);
-                
-                // save them in vector
-                mTextures.push_back(tex);
-                mSurfaces.push_back(surf);
-                
-                //save the names in vector
-                mFileNames.push_back(fileName);
-            }
+                //load acceptable images only
+                if( fileExtention == ".png" || fileExtention == ".jpg" || fileExtention == ".jpeg" ){
+                    // load dropped images
+                    std::string path = dir.string() + "/" + fileName;
+                    SurfaceRef surf = Surface::create(loadImage(path));
+                    gl::TextureRef tex = gl::Texture::create(*surf);
+                    
+                    // save them in vector
+                    mTextures.push_back(tex);
+                    mSurfaces.push_back(surf);
+                    
+                    //save the names in vector
+                    mFileNames.push_back(fileName);
+                }
         }
     }
     return textureRefs;
@@ -322,33 +321,46 @@ void ImageOptimizerApp::showBoth(){
 }
 
 void ImageOptimizerApp::saveMax(){
-    //go thru each surface
-    for (int i = 0; i < mSurfaces.size();i++) {
-        //only clone the non-transparent area based on the offsets
-        Surface tempSurf = mSurfaces[i]->clone(mTrimOffsets[i]);
-        //save them to desktop folder trimmed
-        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / "max" / toString(mFileNames[i]);
-        writeImage( path, tempSurf );
+    
+//    fs::path path = getSaveFilePath( "", ImageIo::getWriteExtensions());
+    fs::path path = getFolderPath();
+    if( ! path.empty() ){
+        //go thru each surface
+        for (int i = 0; i < mSurfaces.size();i++) {
+            //only clone the non-transparent area based on the offsets
+            Surface tempSurf = mSurfaces[i]->clone(mTrimOffsets[i]);
+            //save them to desktop folder trimmed
+            ci::fs::path tempPath = path;
+            tempPath.append(toString(mFileNames[i]));
+            writeImage( tempPath, tempSurf );
+            tempPath.clear();
+        }
+        saveJson(path);
     }
-    saveJson();
 }
 
 void ImageOptimizerApp::saveMin(){
+    fs::path path = getFolderPath();
     //go thru each surface
     for (int i = 0; i < mSurfaces.size();i++) {
         //only clone the non-transparent area based on the offsets
         Surface tempSurf = mSurfaces[i]->clone(mTrimArea);
+        ci::fs::path tempPath = path;
+        tempPath.append(toString(mFileNames[i]));
         //save them to desktop folder trimmed
-        fs::path path = getHomeDirectory() / "Desktop" / "trimmed" / "min" / toString(mFileNames[i]);
-        writeImage( path, tempSurf);
+        writeImage( tempPath, tempSurf);
+        tempPath.clear();
     }
 }
 
-void ImageOptimizerApp::saveJson(){
+void ImageOptimizerApp::saveJson(const fs::path& path){
     //save the offsets for each image into a json file
     JsonTree doc = JsonTree::makeObject();
     JsonTree sequence = JsonTree::makeArray("sequence");
-    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "max" / "sequence.json";
+//    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "max" / "sequence.json";
+    fs::path jsonPath  = path;
+    jsonPath.append("sequence.json");
+
     for (int i = 0; i < mTrimOffsets.size(); i ++) {
         JsonTree curImage = JsonTree::makeObject();
         curImage.pushBack(JsonTree("x", mTrimOffsets[i].x1));

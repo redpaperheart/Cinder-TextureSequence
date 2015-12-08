@@ -20,26 +20,20 @@ class SequencePreviewApp : public App {
     void fileDrop( FileDropEvent event ) override;
     void addNewSequence( const fs::path& path );
     
-    std::vector<ivec2>     mOffsets;//vector holds all the images offsets
-
     ci::gl::TextureRef load( const std::string &url, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
     std::vector<ci::gl::TextureRef> loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt = ci::gl::Texture::Format());
     
-    cinder::params::InterfaceGl     mParams;
+    std::vector<ivec2>      mOffsets; //vector holds all the images offsets
     
-    bool mLoop = true;
+    bool                    mLoop = true;
+    bool                    mDrawBgColor = true;
+    float                   mBgTexAlpha = 0.5f;
+    ci::gl::TextureRef      mBgTexRef = NULL;
+    ci::Color               mBgColor = ci::Color(0,0,0);
     
-    bool mDrawBgColor = true;
+    rph::TextureSequence    *mSequence = NULL;
     
-    float mBGTexAlpha = 0.5f;
-    ci::gl::TextureRef mBgTexRef = NULL;
-    
-    ci::Color mBgColor = ci::Color(0,0,0);
-    
-    
-    rph::TextureSequence *mSequence = NULL;
-    
-    
+    ci::params::InterfaceGl mParams;
 };
 
 void SequencePreviewApp::prepareSettings( Settings *settings ){
@@ -54,7 +48,7 @@ void SequencePreviewApp::setup(){
 //    mParams.addParam( "Loop", &mLoop );
 //    mParams.addSeparator();
     mParams.addParam( "Draw BG", &mDrawBgColor );
-    mParams.addParam( "mBGTexAlpha", &mBGTexAlpha, "min=0 max=1 step=0.01" );
+    mParams.addParam( "mBGTexAlpha", &mBgTexAlpha, "min=0 max=1 step=0.01" );
     mParams.addSeparator();
     mParams.addParam( "BG Color", &mBgColor);
     
@@ -74,9 +68,8 @@ void SequencePreviewApp::fileDrop( FileDropEvent event ){
             
             addNewSequence( event.getFile( s ) );
             
-            mOffsets.clear();
-            
             // check if there's json file in the folder you just droppped.
+            mOffsets.clear();
             if( ci::fs::exists( path / "sequence.json" ) ){
                 console() << "JSON EXISTS" << endl;
                 // load the json
@@ -94,9 +87,6 @@ void SequencePreviewApp::fileDrop( FileDropEvent event ){
             }
             console() << ss.str() << endl;
         }
-        //else if( is json file names sequence.json ){
-            // do stuff
-        //}
         else{
             
             console() << "!! WARNING :: not a folder: " <<  ss.str() << endl;
@@ -128,7 +118,7 @@ void SequencePreviewApp::draw()
 	gl::clear( mBgColor );
     
     if(mBgTexRef && mDrawBgColor){
-        gl::color(ColorA(1,1,1,mBGTexAlpha));
+        gl::color(ColorA(1,1,1,mBgTexAlpha));
         gl::draw( mBgTexRef );
     }
     

@@ -41,6 +41,16 @@ namespace rph {
         setFramerate( fps );
     }
     
+    void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree json, const float &fps = 30.0f)
+    {
+        
+    }
+    void setup(const ci::JsonTree json, const float &fps = 30.0f)
+    {
+        
+    }
+    
+    
     void TextureSequence::setFramerate( float fps )
     {
         mFps = fps;
@@ -119,7 +129,7 @@ namespace rph {
     {
         if( mPlaying ){
             int frameToBe = mStartFrame + (mPlayReverse?-1:1) * ((ci::app::getElapsedSeconds() - mStartTime)/mTimePerFrame);
-            int frameInc = frameToBe - mPlayheadPosition;
+//            int frameInc = frameToBe - mPlayheadPosition;
             //int newPosition = mPlayheadPosition + frameInc;
             int newPosition = frameToBe;
             
@@ -159,5 +169,10 @@ namespace rph {
         } else {
             return ci::gl::Texture::create(0,0);    // maybe we should return a null pointer?
         }
+    }
+    
+    void TextureSequence::draw()
+    {
+    
     }
 }

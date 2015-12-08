@@ -26,6 +26,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/Json.h"
 
 namespace rph{
 
@@ -35,7 +36,10 @@ namespace rph{
         ~TextureSequence();
         
         virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const float &fps = 30.0f);
+        virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree json, const float &fps = 30.0f);
+        virtual void setup(const ci::JsonTree json, const float &fps = 30.0f);
         virtual void update();
+        virtual void draw();
 
         virtual void play(bool reverse = false);
         virtual void stop();
@@ -55,9 +59,9 @@ namespace rph{
         bool isDone()const                          { return mComplete; }                   // returns true if sequence played thru and looping = false;
         bool isLooping( )                           { return mLooping; }
         
-        int getNumFrames()const                     { return mNumFrames; }
-        int getPlayheadPosition() const             { return mPlayheadPosition; }
-        float getFramerate()                        { return mFps; }
+        int     getNumFrames()const                     { return mNumFrames; }
+        int     getPlayheadPosition() const             { return mPlayheadPosition; }
+        float   getFramerate()                        { return mFps; }
         
         ci::gl::TextureRef const getCurrentTexture();
         

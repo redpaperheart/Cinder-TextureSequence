@@ -26,6 +26,7 @@ class SequencePreviewApp : public App {
     std::vector<ivec2>      mOffsets; //vector holds all the images offsets
     
     bool                    mLoop = true;
+    bool                    mDrawTexOutline = false;
     bool                    mDrawBgColor = true;
     float                   mBgTexAlpha = 0.5f;
     ci::gl::TextureRef      mBgTexRef = NULL;
@@ -47,6 +48,7 @@ void SequencePreviewApp::setup(){
     mParams.setOptions( "", "position='10 10'");
 //    mParams.addParam( "Loop", &mLoop );
 //    mParams.addSeparator();
+    mParams.addParam( "Draw Texture Outline", &mDrawTexOutline );
     mParams.addParam( "Draw BG", &mDrawBgColor );
     mParams.addParam( "mBGTexAlpha", &mBgTexAlpha, "min=0 max=1 step=0.01" );
     mParams.addSeparator();
@@ -131,8 +133,10 @@ void SequencePreviewApp::draw()
             gl::translate( mOffsets[ mSequence->getPlayheadPosition() ] );
         
         gl::draw( mSequence->getCurrentTexture() );
-        gl::color(ColorA(1,0,0,1));
-        gl::drawStrokedRect(mSequence->getCurrentTexture()->getBounds());
+        if(mDrawTexOutline){
+            gl::color(ColorA(1,0,0,1));
+            gl::drawStrokedRect(mSequence->getCurrentTexture()->getBounds());
+        }
     }
     
     mParams.draw();

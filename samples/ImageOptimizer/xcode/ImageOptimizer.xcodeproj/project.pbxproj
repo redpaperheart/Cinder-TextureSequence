@@ -16,9 +16,11 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
-		204432BE544247BF8425B1AE /* TextureSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08087144482D439CB6A2923E /* TextureSequence.cpp */; };
 		3126EC6B840042E3829E8D41 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = BCC0D7B709C3440DAFF1A8A6 /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
+		659D4C091C1753E700A474DE /* TextureSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659D4C071C1753E700A474DE /* TextureSequence.cpp */; };
+		659D4C0E1C17A49F00A474DE /* TextureSequenceOptimizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659D4C0C1C17A49F00A474DE /* TextureSequenceOptimizer.cpp */; };
+		659D4C121C17A4AB00A474DE /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659D4C0F1C17A4AB00A474DE /* Model.cpp */; };
 		758012FB3C304EF6A9E466BB /* ImageOptimizerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9627F80920514F80B03B6606 /* ImageOptimizerApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -34,13 +36,19 @@
 		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		060E0ABD73B24742A219FDB8 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
-		08087144482D439CB6A2923E /* TextureSequence.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TextureSequence.cpp; path = ../blocks/TextureSequence/src/rph/TextureSequence.cpp; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		1AADC9DA8AC2451F98E227F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		4B34F6E69A084282BDDDA9C1 /* TextureSequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TextureSequence.h; path = ../blocks/TextureSequence/src/rph/TextureSequence.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
+		659D4C071C1753E700A474DE /* TextureSequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureSequence.cpp; sourceTree = "<group>"; };
+		659D4C081C1753E700A474DE /* TextureSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSequence.h; sourceTree = "<group>"; };
+		659D4C0B1C1760FF00A474DE /* SequenceData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SequenceData.h; path = ../src/data/SequenceData.h; sourceTree = "<group>"; };
+		659D4C0C1C17A49F00A474DE /* TextureSequenceOptimizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureSequenceOptimizer.cpp; path = ../src/TextureSequenceOptimizer.cpp; sourceTree = "<group>"; };
+		659D4C0D1C17A49F00A474DE /* TextureSequenceOptimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureSequenceOptimizer.h; path = ../src/TextureSequenceOptimizer.h; sourceTree = "<group>"; };
+		659D4C0F1C17A4AB00A474DE /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Model.cpp; path = ../src/data/Model.cpp; sourceTree = "<group>"; };
+		659D4C101C17A4AB00A474DE /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Model.h; path = ../src/data/Model.h; sourceTree = "<group>"; };
+		659D4C111C17A4AB00A474DE /* NavigationEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavigationEvent.h; path = ../src/data/NavigationEvent.h; sourceTree = "<group>"; };
 		6AD762B133194B3AB7D8F504 /* ImageOptimizer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ImageOptimizer_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ImageOptimizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageOptimizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9627F80920514F80B03B6606 /* ImageOptimizerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ImageOptimizerApp.cpp; path = ../src/ImageOptimizerApp.cpp; sourceTree = "<group>"; };
@@ -72,7 +80,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				5BFCF5497A164F219DB96A2E /* TextureSequence */,
+				659D4C041C1753C600A474DE /* TextureSequence */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -80,7 +88,10 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				659D4C0A1C1760C200A474DE /* data */,
 				9627F80920514F80B03B6606 /* ImageOptimizerApp.cpp */,
+				659D4C0C1C17A49F00A474DE /* TextureSequenceOptimizer.cpp */,
+				659D4C0D1C17A49F00A474DE /* TextureSequenceOptimizer.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -160,29 +171,41 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		54608383911F48D0AFF8CF87 /* rph */ = {
+		659D4C041C1753C600A474DE /* TextureSequence */ = {
 			isa = PBXGroup;
 			children = (
-				4B34F6E69A084282BDDDA9C1 /* TextureSequence.h */,
-				08087144482D439CB6A2923E /* TextureSequence.cpp */,
-			);
-			name = rph;
-			sourceTree = "<group>";
-		};
-		5BFCF5497A164F219DB96A2E /* TextureSequence */ = {
-			isa = PBXGroup;
-			children = (
-				F1BF1AAD4D9E46EFB0120B2D /* src */,
+				659D4C051C1753E700A474DE /* src */,
 			);
 			name = TextureSequence;
 			sourceTree = "<group>";
 		};
-		F1BF1AAD4D9E46EFB0120B2D /* src */ = {
+		659D4C051C1753E700A474DE /* src */ = {
 			isa = PBXGroup;
 			children = (
-				54608383911F48D0AFF8CF87 /* rph */,
+				659D4C061C1753E700A474DE /* rph */,
 			);
 			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		659D4C061C1753E700A474DE /* rph */ = {
+			isa = PBXGroup;
+			children = (
+				659D4C071C1753E700A474DE /* TextureSequence.cpp */,
+				659D4C081C1753E700A474DE /* TextureSequence.h */,
+			);
+			path = rph;
+			sourceTree = "<group>";
+		};
+		659D4C0A1C1760C200A474DE /* data */ = {
+			isa = PBXGroup;
+			children = (
+				659D4C0F1C17A4AB00A474DE /* Model.cpp */,
+				659D4C101C17A4AB00A474DE /* Model.h */,
+				659D4C111C17A4AB00A474DE /* NavigationEvent.h */,
+				659D4C0B1C1760FF00A474DE /* SequenceData.h */,
+			);
+			name = data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -248,8 +271,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				659D4C091C1753E700A474DE /* TextureSequence.cpp in Sources */,
 				758012FB3C304EF6A9E466BB /* ImageOptimizerApp.cpp in Sources */,
-				204432BE544247BF8425B1AE /* TextureSequence.cpp in Sources */,
+				659D4C0E1C17A49F00A474DE /* TextureSequenceOptimizer.cpp in Sources */,
+				659D4C121C17A4AB00A474DE /* Model.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

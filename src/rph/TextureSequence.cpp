@@ -41,13 +41,19 @@ namespace rph {
         setFramerate( fps );
     }
     
-    void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree json, const float &fps = 30.0f)
+    void TextureSequence::setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree json, const float &fps)
     {
-        
+//        mTextureRefs.clear();
+//        mTextureRefs = textureRefs;
+//        mNumFrames = mTextureRefs.size();
+//        setFramerate( fps );
     }
-    void setup(const ci::JsonTree json, const float &fps = 30.0f)
+    void TextureSequence::setup(const ci::JsonTree json, const float &fps)
     {
-        
+//        mTextureRefs.clear();
+//        mTextureRefs = textureRefs;
+//        mNumFrames = mTextureRefs.size();
+//        setFramerate( fps );
     }
     
     

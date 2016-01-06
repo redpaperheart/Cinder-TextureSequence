@@ -31,6 +31,7 @@ namespace rph {
     TextureSequence::~TextureSequence()
     {
         mTextureRefs.clear();
+        mTexRefOffsets.clear();
     }
     
     void TextureSequence::setup( const std::vector<ci::gl::TextureRef> &textureRefs, const float &fps )
@@ -41,19 +42,31 @@ namespace rph {
         setFramerate( fps );
     }
     
-    void TextureSequence::setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree json, const float &fps)
+    void TextureSequence::setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree &json, const float &fps)
     {
-//        mTextureRefs.clear();
-//        mTextureRefs = textureRefs;
-//        mNumFrames = mTextureRefs.size();
-//        setFramerate( fps );
+        mTextureRefs.clear();
+        mTextureRefs = textureRefs;
+        mNumFrames = mTextureRefs.size();
+        setFramerate( fps );
+        setupMetaInfo( json);
+        
     }
-    void TextureSequence::setup(const ci::JsonTree json, const float &fps)
-    {
-//        mTextureRefs.clear();
-//        mTextureRefs = textureRefs;
-//        mNumFrames = mTextureRefs.size();
-//        setFramerate( fps );
+    
+    void TextureSequence::setupMetaInfo( const ci::JsonTree &json ){
+        mTexRefOffsets.clear();
+        // loop through the json sequence and fill the mOffsets vector
+        for( auto itr = json["sequence"].begin(); itr != json["sequence"].end(); itr++){
+            ci::ivec2 tempVec;
+            tempVec.x = (*itr)["x"].getValue<int>();
+            tempVec.y = (*itr)["y"].getValue<int>();
+            mTexRefOffsets.push_back(tempVec);
+        }
+        
+        // test if num of Images matches Number of Images Info in the json file
+        if(mTextureRefs.size() != mTexRefOffsets.size()){
+            ci::app::console() << "WARNING: Number of images and json info does not match." << std::endl;
+        }
+        
     }
     
     
@@ -125,49 +138,59 @@ namespace rph {
     /**
      *  -- TODO
      */
-    void TextureSequence::stepForward( int frameInc ) {}
-    void TextureSequence::stepBackward(int frameInc ) {}
+    void TextureSequence::step( int frameInc ) {}
     
     /**
-     *  -- Call on each frame to update the playhead
+     *  -- Call on each frame to update the playhead, this method jumps frames if current framerate is lower fps of sequence
      */
     void TextureSequence::update()
     {
         if( mPlaying ){
-            int frameToBe = mStartFrame + (mPlayReverse?-1:1) * ((ci::app::getElapsedSeconds() - mStartTime)/mTimePerFrame);
-//            int frameInc = frameToBe - mPlayheadPosition;
-            //int newPosition = mPlayheadPosition + frameInc;
-            int newPosition = frameToBe;
-            
-//            ci::app::console() << "1 . Frame to be: " << frameToBe << ", newPosition: "<< newPosition<< ", playheadPos: "<< mPlayheadPosition << ", frameInc: " << frameInc << std::endl;
-            
-            if( newPosition > mNumFrames - 1 ){
-                if( mLooping ){
-                    mComplete = false;
-                    mPlayheadPosition = newPosition % mNumFrames;
-                } else {
-                    mComplete = true;
-                    stop();
-                }
-                
-            } else if( newPosition < 0 ) {
-                if( mLooping ){
-                    mComplete = false;
-                    mPlayheadPosition = (mNumFrames + (newPosition % mNumFrames))%mNumFrames ;
-                    
-                } else {
-                    mComplete = true;
-                    stop();
-                }
-            } else {
-                mComplete = false;
-                mPlayheadPosition = newPosition;
-            }
-            
-//            ci::app::console() << "2 . Frame to be: " << frameToBe << ", newPosition: "<< newPosition<< ", playheadPos: "<< mPlayheadPosition << std::endl;
+            int newPosition = mStartFrame + (mPlayReverse?-1:1) * ((ci::app::getElapsedSeconds() - mStartTime)/mTimePerFrame);
+            update( newPosition );
         }
     }
-
+    
+    /**
+     *  -- 
+     */
+    void TextureSequence::update( int newPosition )
+    {
+        if( newPosition > mNumFrames - 1 ){
+            if( mLooping ){
+                mComplete = false;
+                mPlayheadPosition = newPosition % mNumFrames;
+            } else {
+                mPlayheadPosition = mNumFrames - 1;
+                mComplete = true;
+                stop();
+            }
+            
+        } else if( newPosition < 0 ) {
+            if( mLooping ){
+                mComplete = false;
+                mPlayheadPosition = (mNumFrames + (newPosition % mNumFrames))%mNumFrames ;
+                
+            } else {
+                mPlayheadPosition = 0;
+                mComplete = true;
+                stop();
+            }
+        } else {
+            mComplete = false;
+            mPlayheadPosition = newPosition;
+        }
+    }
+    
+    ci::ivec2 const TextureSequence::getCurrentOffset()
+    {
+        if( mTexRefOffsets.size() > 0 ){
+            return mTexRefOffsets[ mPlayheadPosition ];
+        } else {
+            return ci::ivec2(0);
+        }
+    }
+    
     ci::gl::TextureRef const TextureSequence::getCurrentTexture()
     {
         if( mTextureRefs.size() > 0 ){
@@ -179,6 +202,7 @@ namespace rph {
     
     void TextureSequence::draw()
     {
-    
+        ci::gl::translate( getCurrentOffset() );
+        ci::gl::draw( getCurrentTexture() );
     }
 }

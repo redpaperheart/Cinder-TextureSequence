@@ -36,22 +36,21 @@ namespace rph{
         ~TextureSequence();
         
         virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const float &fps = 30.0f);
-        virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree json, const float &fps = 30.0f);
-        virtual void setup(const ci::JsonTree json, const float &fps = 30.0f);
-        virtual void update();
+        virtual void setup(const std::vector<ci::gl::TextureRef> &textureRefs, const ci::JsonTree &json, const float &fps = 30.0f);
         virtual void draw();
 
         virtual void play(bool reverse = false);
         virtual void stop();
         virtual void togglePlayback();
         virtual void reset();
-
-        void stepForward( int frameInc = 1 );
-        void stepBackward( int frameInc = 1 );
         
-        void setFramerate( float fps );
+        virtual void update();
+        void step( int frameInc = 1 );
+        
+        
         void setPlayheadPosition( int newPosition );
         void setPlayheadPositionByPerc( float perc );
+        void setFramerate( float fps );
         void setLoop( bool doLoop )                 { mLooping = doLoop; }
         
         bool isPlaying()                            { return mPlaying; }                    // returns true if sequence is currently playing
@@ -59,14 +58,18 @@ namespace rph{
         bool isDone()const                          { return mComplete; }                   // returns true if sequence played thru and looping = false;
         bool isLooping( )                           { return mLooping; }
         
-        int     getNumFrames()const                     { return mNumFrames; }
-        int     getPlayheadPosition() const             { return mPlayheadPosition; }
-        float   getFramerate()                        { return mFps; }
+        int     getNumFrames()const                 { return mNumFrames; }
+        int     getPlayheadPosition() const         { return mPlayheadPosition; }
+        float   getFramerate()                      { return mFps; }
         
         ci::gl::TextureRef const getCurrentTexture();
+        ci::ivec2 const getCurrentOffset();
         
     protected:
+        virtual void update( int newFramePos );
+        virtual void setupMetaInfo( const ci::JsonTree &json );
         std::vector<ci::gl::TextureRef> mTextureRefs;
+        std::vector<ci::ivec2> mTexRefOffsets;
         
         int mPlayheadPosition = 0;
         int mNumFrames = 0;

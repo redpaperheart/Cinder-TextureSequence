@@ -16,7 +16,6 @@ using namespace std;
 
 class ImageOptimizerApp : public App {
 public:
-    
     static void prepareSettings( Settings *settings);
     void setup() override;
     void update() override;
@@ -35,7 +34,8 @@ public:
     cinder::params::InterfaceGl mParams;
 };
 
-void ImageOptimizerApp::prepareSettings( Settings *settings ){
+void ImageOptimizerApp::prepareSettings( Settings *settings )
+{
     settings->setWindowSize( 960, 960 );
     settings->setFrameRate( 60.0 );
 }
@@ -58,45 +58,33 @@ void ImageOptimizerApp::setup()
 //    mParams.addButton( "play", bind( &TextureSequenceOptimizer::showAnimation, mOptimizr ) );
     mParams.addButton( "SaveMaxTrim", std::bind( &TextureSequenceOptimizer::saveMax, &mOptimizr, fs::path() ) );
     mParams.addButton( "SaveMinTrim", std::bind( &TextureSequenceOptimizer::saveMin, &mOptimizr, fs::path() ) );
-    
-    gl::enableAlphaBlending();
 }
 
-
-
-
-
-void ImageOptimizerApp::analysePath(const fs::path& path, const fs::path& relativePath = ""){
-    
+void ImageOptimizerApp::analysePath( const fs::path& path, const fs::path& relativePath = "" )
+{
     if (ci::fs::is_directory(path)) {
-//        console() << "----" << endl;
-//        console() << "stem: "<< relativePath << endl;
-//        console() << "AnalyzePath start: " << path << endl;
         
+        bool isSequence = false;
         bool dirIncludesFiles = false;
         bool dirIncludesSubDirectories = false;
         int fileCount = 0;
         int fileSizeCount = 0;
         int subDirCount = 0;
-        bool isSequence = false;
         
-        for ( ci::fs::directory_iterator it( path ); it != ci::fs::directory_iterator(); ++it ){
+        for ( fs::directory_iterator it( path ); it != ci::fs::directory_iterator(); ++it ){
             
-            if ( ci::fs::is_regular_file( *it ) ){
-                // -- Perhaps there is  a better way to ignore hidden files
+            if ( fs::is_regular_file( *it ) ) {
                 fileSizeCount += fs::file_size(*it);
-                //console() << "File ("<< it->path().filename().string() <<") size: " << fs::file_size(*it) << endl;
                 dirIncludesFiles = true;
                 fileCount++;
-            }else
-            if( ci::fs::is_directory(*it) ){
+            }
+            else if( fs::is_directory(*it) ){
                 dirIncludesSubDirectories = true;
                 subDirCount++;
-                // call this function recursively
-                analysePath( *it, relativePath/path.stem() );
+                analysePath( *it, relativePath/path.stem() ); // call recursively
             }
         }
-        if(!dirIncludesSubDirectories && dirIncludesFiles){
+        if (!dirIncludesSubDirectories && dirIncludesFiles) {
             isSequence = true;
             SequenceData *s = new SequenceData();
             s->absolutePathOrigin = path;
@@ -109,7 +97,8 @@ void ImageOptimizerApp::analysePath(const fs::path& path, const fs::path& relati
     }
 }
 
-int ImageOptimizerApp::getTextureSequenceFilesize( const fs::path& path ){
+int ImageOptimizerApp::getTextureSequenceFilesize( const fs::path& path )
+{
     int fileSizeTotal = 0;
     if (ci::fs::is_directory(path)) {
         for ( ci::fs::directory_iterator it( path ); it != ci::fs::directory_iterator(); ++it ){
@@ -135,6 +124,7 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
         int totalFileCount = 0;
         int totalFilesizeOrigin = 0;
         int totalFilesizeOptimized = 0;
+        
         //ask for where to store it
         fs::path savePath = getFolderPath();
         for (auto it = mBatchSequenceDirectories.begin(); it < mBatchSequenceDirectories.end(); it++){
@@ -154,14 +144,12 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
         console() << totalFileCount << " images optimized. Original size: " << totalFilesizeOrigin << " Optimized size: " << totalFilesizeOptimized << " -> " << ci::toString( (1.0f-float(totalFilesizeOptimized)/float(totalFilesizeOrigin)) * 100) << "% smaller" << endl;
         console() << "--------------------------" << endl;
         return;
-    };
+    }
     
     if( mBatchMinOptRect.contains( event.getPos() ) ){
         console() << "MINIMUM OPTIMZATION BATCH!" << endl;
         return;
-    };
-    
-    
+    }
     
     for( size_t s = 0; s < event.getNumFiles(); ++s ){
         const fs::path& path = event.getFile( s );
@@ -175,7 +163,6 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
         }
     }
 }
-
 
 void ImageOptimizerApp::update()
 {
@@ -195,7 +182,6 @@ void ImageOptimizerApp::draw()
     gl::drawStrokedRect(mBatchMinOptRect);
     gl::drawString("Drop here for minimum image optimization.", mBatchMinOptRect.getUpperLeft()+vec2(10));
     
-    // Draw the interface
     mParams.draw();
 }
 

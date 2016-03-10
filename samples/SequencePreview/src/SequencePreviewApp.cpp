@@ -146,8 +146,8 @@ ci::gl::TextureRef SequencePreviewApp::load( const std::string &url, ci::gl::Tex
     return NULL;
 }
 
-std::vector<ci::gl::TextureRef> SequencePreviewApp::loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt){
-    
+std::vector<ci::gl::TextureRef> SequencePreviewApp::loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt)
+{
     std::vector<ci::gl::TextureRef> textureRefs;
     textureRefs.clear();
     for ( ci::fs::directory_iterator it( dir ); it != ci::fs::directory_iterator(); ++it ){

@@ -7,14 +7,12 @@
 #include "TextureSequenceOptimizer.h"
 
 TextureSequenceOptimizer::TextureSequenceOptimizer(){
-    ci::app::console() << ci::app::getElapsedSeconds() << " TextureSequenceOptimizer" << std::endl;
+    app::console() << app::getElapsedSeconds() << " TextureSequenceOptimizer" << std::endl;
     
 }
 
 void TextureSequenceOptimizer::setup( const fs::path& path )
 {
-    m = Model::getInstance();
-    
     loadImageDirectory( path );
     renderImagesToFbo();
 //    play( event.getFile( s ) );
@@ -30,7 +28,6 @@ void TextureSequenceOptimizer::renderImagesToFbo()
     
     // create fbo
     mFboRef = gl::Fbo::create(width, height, true);
-    
     {
         // bind fbo
         gl::ScopedFramebuffer fbScp( mFboRef );
@@ -58,30 +55,30 @@ void TextureSequenceOptimizer::renderImagesToFbo()
 
 //void TextureSequenceOptimizer::resize(){}
 
-ci::gl::TextureRef TextureSequenceOptimizer::load( const std::string &url, ci::gl::Texture::Format fmt )
+gl::TextureRef TextureSequenceOptimizer::load( const std::string &url, gl::Texture::Format fmt )
 {
     try{
-        ci::gl::TextureRef t = ci::gl::Texture::create( ci::loadImage( url ), fmt );
+        gl::TextureRef t = gl::Texture::create( loadImage( url ), fmt );
         return t;
     }catch(...){}
-    ci::app::console() << ci::app::getElapsedSeconds() << ": error loading texture '" << url << "'!" << std::endl;
+    app::console() << app::getElapsedSeconds() << ": error loading texture '" << url << "'!" << std::endl;
     return NULL;
 }
 
-std::vector<ci::gl::TextureRef> TextureSequenceOptimizer::loadImageDirectory(ci::fs::path dir, ci::gl::Texture::Format fmt){
-    
+std::vector<gl::TextureRef> TextureSequenceOptimizer::loadImageDirectory(fs::path dir, gl::Texture::Format fmt)
+{
     bTrimmedMax = false;
     
     mTextureRefs.clear();
     mSurfaceRefs.clear();
     mFileNames.clear();
     
-    std::vector<ci::gl::TextureRef> textureRefs;
+    std::vector<gl::TextureRef> textureRefs;
     textureRefs.clear();
-    for ( ci::fs::directory_iterator it( dir ); it != ci::fs::directory_iterator(); ++it ){
-        if ( ci::fs::is_regular_file( *it ) ){
+    for ( fs::directory_iterator it( dir ); it != fs::directory_iterator(); ++it ){
+        if ( fs::is_regular_file( *it ) ){
             // -- Perhaps there is  a better way to ignore hidden files
-            ci::fs::path fileExtention = it->path().extension();
+            fs::path fileExtention = it->path().extension();
             std::string fileName = it->path().filename().string();
             //load acceptable images only
             if( fileExtention == ".png" || fileExtention == ".jpg" || fileExtention == ".jpeg" ){
@@ -102,16 +99,15 @@ std::vector<ci::gl::TextureRef> TextureSequenceOptimizer::loadImageDirectory(ci:
     return textureRefs;
 }
 
-void TextureSequenceOptimizer::trim(){
+void TextureSequenceOptimizer::trim()
+{
     trimMax();
     trimMin();
-    
 }
 
-
 //trim to the max amount for each image.
-void TextureSequenceOptimizer::trimMax(){
-    
+void TextureSequenceOptimizer::trimMax()
+{
     mTrimMaxAreas.clear();
     
     // number of lines to cut
@@ -126,7 +122,7 @@ void TextureSequenceOptimizer::trimMax(){
         //go thru pixels from top
         for (int y = 0; y < surf->getHeight(); y++) {
             for (int x =0; x < surf->getWidth(); x++) {
-                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                ColorA c = surf->getPixel( vec2(x, y) );
                 //stop at the first non-transparent pixel
                 if ( c.a > 0.0f ) {
                     trimTop = y;
@@ -141,7 +137,7 @@ void TextureSequenceOptimizer::trimMax(){
         stop = false;
         for (int y = surf->getHeight() -1; y >=  0; y--) {
             for (int x =0; x < surf->getWidth(); x++) {
-                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                ColorA c = surf->getPixel( vec2(x, y) );
                 if ( c.a > 0.0f ) {
                     trimBottom = y+1;
                     stop = true;
@@ -155,7 +151,7 @@ void TextureSequenceOptimizer::trimMax(){
         stop = false;
         for (int x = 0; x < surf-> getWidth(); x++) {
             for (int y =0; y < surf->getHeight(); y++) {
-                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                ColorA c = surf->getPixel( vec2(x, y) );
                 if ( c.a > 0.0f ) {
                     trimLeft = x;
                     stop = true;
@@ -169,7 +165,7 @@ void TextureSequenceOptimizer::trimMax(){
         stop = false;
         for (int x = surf->getWidth()-1; x >= 0; x--) {
             for (int y =0; y < surf->getHeight(); y++) {
-                ci::ColorA c = surf->getPixel( vec2(x, y) );
+                ColorA c = surf->getPixel( vec2(x, y) );
                 if ( c.a > 0.0f ) {
                     trimRight = x+1;
                     stop = true;
@@ -198,8 +194,8 @@ void TextureSequenceOptimizer::trimMax(){
 //}
 
 //trim minimum amount of pixels
-void TextureSequenceOptimizer::trimMin(){
-    
+void TextureSequenceOptimizer::trimMin()
+{
     if (!bTrimmedMax) {
         trimMax();
     }
@@ -229,10 +225,6 @@ void TextureSequenceOptimizer::trimMin(){
     }
     
     mTrimMinArea = Area(tempX1, tempY1, tempX2, tempY2);
-//    cinder::app::console() << "mTrimArea: " << mTrimMinArea<<std::endl;
-//    bMaxTrim = false;
-//    bMinTrim = true;
-    
 }
 
 //void TextureSequenceOptimizer::showBoth(){
@@ -240,28 +232,29 @@ void TextureSequenceOptimizer::trimMin(){
 //    bMinTrim = true;
 //}
 
-void TextureSequenceOptimizer::saveMax( fs::path path ){
-    if(path == fs::path()){
-        path = ci::app::App::get()->getFolderPath();
-        ci::app::console() << "SAVE MAX: " << path << std::endl;
+void TextureSequenceOptimizer::saveMax( fs::path path )
+{
+    if ( path == fs::path() ) {
+        path = app::App::get()->getFolderPath();
+        app::console() << "SAVE MAX: " << path << std::endl;
     }
     if( ! path.empty() ){
         //go thru each surface
         for (int i = 0; i < mSurfaceRefs.size(); i++) {
             
-            ci::fs::path tempPath = path;
+            fs::path tempPath = path;
             tempPath.append(toString(mFileNames[i]));
             
             //only clone the non-transparent area based on the offsets
             Surface tempSurf;
             if( mTrimMaxAreas[i].calcArea() == 0 ){
-                ci::app::console() << " Image is completely transparent: " << tempPath << std::endl;
+                app::console() << " Image is completely transparent: " << tempPath << std::endl;
                 tempSurf = mSurfaceRefs[i]->clone( Area(0,0,10,10) );
             }else{
                 tempSurf = mSurfaceRefs[i]->clone(mTrimMaxAreas[i]);
             }
             
-//            ci::app::console() << "saving: " << tempPath << " "<< mTrimMaxAreas[i] << std::endl;
+//            app::console() << "saving: " << tempPath << " "<< mTrimMaxAreas[i] << std::endl;
             writeImage( tempPath, tempSurf );
             tempPath.clear();
         }
@@ -269,16 +262,17 @@ void TextureSequenceOptimizer::saveMax( fs::path path ){
     }
 }
 
-void TextureSequenceOptimizer::saveMin( fs::path path ){
-    if(path == fs::path()){
-        path = ci::app::App::get()->getFolderPath();
+void TextureSequenceOptimizer::saveMin( fs::path path )
+{
+    if (path == fs::path()) {
+        path = app::App::get()->getFolderPath();
     }
-    ci::app::console() << "SAVE MIN: " << path << std::endl;
+    app::console() << "SAVE MIN: " << path << std::endl;
     //go thru each surface
     for (int i = 0; i < mSurfaceRefs.size();i++) {
         //only clone the non-transparent area based on the offsets
         Surface tempSurf = mSurfaceRefs[i]->clone(mTrimMinArea);
-        ci::fs::path tempPath = path;
+        fs::path tempPath = path;
         tempPath.append(toString(mFileNames[i]));
         //save them to desktop folder trimmed
         writeImage( tempPath, tempSurf);
@@ -286,12 +280,12 @@ void TextureSequenceOptimizer::saveMin( fs::path path ){
     }
 }
 
-void TextureSequenceOptimizer::saveJson(const fs::path& path){
+void TextureSequenceOptimizer::saveJson( const fs::path& path )
+{
     //save the offsets for each image into a json file
     JsonTree doc = JsonTree::makeObject();
     JsonTree sequence = JsonTree::makeArray("sequence");
-    //    fs::path jsonPath  = getHomeDirectory() / "Desktop" / "trimmed"/ "max" / "sequence.json";
-    fs::path jsonPath  = path;
+    fs::path jsonPath = path;
     jsonPath.append("sequence.json");
     
     for (int i = 0; i < mTrimMaxAreas.size(); i ++) {
@@ -322,7 +316,7 @@ void TextureSequenceOptimizer::saveJson(const fs::path& path){
 
 void TextureSequenceOptimizer::update()
 {
-//    ci::app::console() << "Loaded amd Trimmed. Surfaces: " << mSurfaces.size() << ", Filenames: " << mFileNames.size() << std::endl;
+//    app::console() << "Loaded amd Trimmed. Surfaces: " << mSurfaces.size() << ", Filenames: " << mFileNames.size() << std::endl;
     
 //    if(mSequence){
 //        mSequence->update();
@@ -335,14 +329,14 @@ void TextureSequenceOptimizer::draw()
     gl::draw(mResultTextureRef);
 
     gl::color( ColorA(1, 0, 0, 0.5f) );
-    gl::drawSolidRect(ci::Rectf(mOriOutline.x1,mOriOutline.y1, mOriOutline.x2, mTrimMinArea.y1));
-    gl::drawSolidRect(ci::Rectf(mOriOutline.x1,mOriOutline.y1, mTrimMinArea.x1, mOriOutline.y2));
-    gl::drawSolidRect(ci::Rectf(mOriOutline.x1,mTrimMinArea.y2, mOriOutline.x2, mOriOutline.y2));
-    gl::drawSolidRect(ci::Rectf(mTrimMinArea.x2,mOriOutline.y1, mOriOutline.x2, mOriOutline.y2));
+    gl::drawSolidRect(Rectf(mOriOutline.x1,mOriOutline.y1, mOriOutline.x2, mTrimMinArea.y1));
+    gl::drawSolidRect(Rectf(mOriOutline.x1,mOriOutline.y1, mTrimMinArea.x1, mOriOutline.y2));
+    gl::drawSolidRect(Rectf(mOriOutline.x1,mTrimMinArea.y2, mOriOutline.x2, mOriOutline.y2));
+    gl::drawSolidRect(Rectf(mTrimMinArea.x2,mOriOutline.y1, mOriOutline.x2, mOriOutline.y2));
 
     gl::color(0,0,1);
     for (Area trimArea : mTrimMaxAreas) {
-        gl::drawStrokedRect(ci::Rectf(trimArea));
+        gl::drawStrokedRect(Rectf(trimArea));
     }
     
 //    if(mSequence){
@@ -351,7 +345,7 @@ void TextureSequenceOptimizer::draw()
 //    }
     
     gl::color(1, 0, 0);
-    gl::drawStrokedRect(ci::Rectf(mOriOutline));
+    gl::drawStrokedRect(Rectf(mOriOutline));
     
 }
 

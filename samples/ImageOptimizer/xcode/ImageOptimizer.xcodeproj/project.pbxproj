@@ -20,7 +20,6 @@
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		659D4C091C1753E700A474DE /* TextureSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659D4C071C1753E700A474DE /* TextureSequence.cpp */; };
 		659D4C0E1C17A49F00A474DE /* TextureSequenceOptimizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659D4C0C1C17A49F00A474DE /* TextureSequenceOptimizer.cpp */; };
-		659D4C121C17A4AB00A474DE /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659D4C0F1C17A4AB00A474DE /* Model.cpp */; };
 		758012FB3C304EF6A9E466BB /* ImageOptimizerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9627F80920514F80B03B6606 /* ImageOptimizerApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -46,9 +45,6 @@
 		659D4C0B1C1760FF00A474DE /* SequenceData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SequenceData.h; path = ../src/data/SequenceData.h; sourceTree = "<group>"; };
 		659D4C0C1C17A49F00A474DE /* TextureSequenceOptimizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureSequenceOptimizer.cpp; path = ../src/TextureSequenceOptimizer.cpp; sourceTree = "<group>"; };
 		659D4C0D1C17A49F00A474DE /* TextureSequenceOptimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureSequenceOptimizer.h; path = ../src/TextureSequenceOptimizer.h; sourceTree = "<group>"; };
-		659D4C0F1C17A4AB00A474DE /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Model.cpp; path = ../src/data/Model.cpp; sourceTree = "<group>"; };
-		659D4C101C17A4AB00A474DE /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Model.h; path = ../src/data/Model.h; sourceTree = "<group>"; };
-		659D4C111C17A4AB00A474DE /* NavigationEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavigationEvent.h; path = ../src/data/NavigationEvent.h; sourceTree = "<group>"; };
 		6AD762B133194B3AB7D8F504 /* ImageOptimizer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ImageOptimizer_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ImageOptimizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageOptimizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9627F80920514F80B03B6606 /* ImageOptimizerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ImageOptimizerApp.cpp; path = ../src/ImageOptimizerApp.cpp; sourceTree = "<group>"; };
@@ -88,10 +84,10 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				659D4C0A1C1760C200A474DE /* data */,
 				9627F80920514F80B03B6606 /* ImageOptimizerApp.cpp */,
 				659D4C0C1C17A49F00A474DE /* TextureSequenceOptimizer.cpp */,
 				659D4C0D1C17A49F00A474DE /* TextureSequenceOptimizer.h */,
+				659D4C0B1C1760FF00A474DE /* SequenceData.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -197,17 +193,6 @@
 			path = rph;
 			sourceTree = "<group>";
 		};
-		659D4C0A1C1760C200A474DE /* data */ = {
-			isa = PBXGroup;
-			children = (
-				659D4C0F1C17A4AB00A474DE /* Model.cpp */,
-				659D4C101C17A4AB00A474DE /* Model.h */,
-				659D4C111C17A4AB00A474DE /* NavigationEvent.h */,
-				659D4C0B1C1760FF00A474DE /* SequenceData.h */,
-			);
-			name = data;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -274,7 +259,6 @@
 				659D4C091C1753E700A474DE /* TextureSequence.cpp in Sources */,
 				758012FB3C304EF6A9E466BB /* ImageOptimizerApp.cpp in Sources */,
 				659D4C0E1C17A49F00A474DE /* TextureSequenceOptimizer.cpp in Sources */,
-				659D4C121C17A4AB00A474DE /* Model.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

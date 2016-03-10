@@ -12,7 +12,7 @@ using namespace ci;
 
 class SequenceData {
 public:
-    SequenceData(){};
+    SequenceData() {};
     
     fs::path absolutePathOrigin;
     fs::path absolutePathOptimized;
@@ -22,7 +22,7 @@ public:
     int dirSizeOrigin = 0;
     int dirSizeOptimized = 0;
     
-    std::string toString(){
+    std::string toString() {
         return relativePath.string() + " - " + ci::toString(fileCount) + " files, " + ci::toString(dirSizeOrigin) +" bytes" ;
     }
 };

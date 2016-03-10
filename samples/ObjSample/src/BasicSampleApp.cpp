@@ -1,51 +1,42 @@
 // obj model taken from http://www.sci.utah.edu/~wald/animrep/
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
-#include "cinder/gl/gl.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/TriMesh.h"
 #include "cinder/ObjLoader.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 
 #include "rph/Sequence.h"
 
 using namespace ci;
 using namespace ci::app;
 
-class BasicSampleApp : public AppNative {
+class BasicSampleApp : public App {
   public:
-	void setup();
-	void update();
-	void draw();
-    void keyDown(KeyEvent event);
-    void mouseDown(MouseEvent event);
-    void mouseDrag(MouseEvent event);
+	void setup() override;
+	void update() override;
+	void draw() override;
+    void keyDown(KeyEvent event) override;
     
     std::vector<TriMeshRef> loadObjFolder(fs::path folderPath);
   
-    MayaCamUI mMayaCam;
+    CameraPersp mCam;
+    CameraUi    mCamUi;
     rph::Sequence<gl::BatchRef> mSequence;
-    gl::GlslProgRef mPhong;
 };
 
 void BasicSampleApp::setup()
 {
-    // load shaders
-    mPhong = gl::GlslProg::create(loadAsset("DebugPhong.vert"), loadAsset("DebugPhong.frag"));
-    
     // load the obj sequence
-    std::vector<TriMeshRef> meshes = loadObjFolder("wooddoll");
+    std::vector<TriMeshRef> meshes = loadObjFolder(getAssetPath("wooddoll"));
     
     // create a batch for every mesh
+    gl::GlslProgRef shader = gl::getStockShader(gl::ShaderDef().color().lambert());
     std::vector<gl::BatchRef> batches;
     
     for (TriMeshRef mesh : meshes) {
-        batches.push_back(gl::Batch::create(*mesh, mPhong));
+        batches.push_back(gl::Batch::create(*mesh, shader));
     }
     
     // setup texture sequence
@@ -54,13 +45,9 @@ void BasicSampleApp::setup()
     mSequence.play();
    
     // setup camera
-    CameraPersp initialCam;
-    initialCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1, 10000 );
-    initialCam.setEyePoint(vec3(0.1, 0.3, 1));
-    initialCam.setCenterOfInterestPoint(vec3(0.1, 0.3, 0));
-    mMayaCam.setCurrentCam( initialCam );
-    
-    gl::enableAlphaBlending();
+    mCam = CameraPersp(getWindowWidth(), getWindowHeight(), 40.0f, 0.1, 1000);
+    mCam.lookAt(vec3(1), vec3(0.1, 0.3, 0.0));
+    mCamUi = CameraUi(&mCam, getWindow());
 }
 
 void BasicSampleApp::update()
@@ -72,27 +59,12 @@ void BasicSampleApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
     
-    gl::enableDepthWrite();
-    gl::enableDepthRead();
-    
-    // draw 3d model
-    gl::ScopedGlslProg phong(mPhong);
-    
+    gl::ScopedColor color(Color::hex(0xDEAE86));
+    gl::ScopedDepth depth(true);
     gl::ScopedMatrices matricesCamera;
-    gl::setMatrices( mMayaCam.getCamera() );
-    gl::color(Color::hex(0xDEAE86));
-   
+    gl::setMatrices( mCam );
+    
     mSequence.getCurrentFrame()->draw();
-}
-
-void BasicSampleApp::mouseDown( MouseEvent event )
-{
-    mMayaCam.mouseDown( event.getPos() );
-}
-
-void BasicSampleApp::mouseDrag( MouseEvent event )
-{
-    mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
 }
 
 void BasicSampleApp::keyDown( KeyEvent event )
@@ -107,17 +79,16 @@ void BasicSampleApp::keyDown( KeyEvent event )
 std::vector<TriMeshRef> BasicSampleApp::loadObjFolder(fs::path folderPath)
 {
     std::vector<TriMeshRef> meshes;
-    fs::path assetFolderPath = app::getAssetPath(folderPath);
     
     try {
-        for (fs::directory_iterator it( assetFolderPath ); it != fs::directory_iterator(); ++it ) {
+        for (fs::directory_iterator it( folderPath ); it != fs::directory_iterator(); ++it ) {
             
             if (fs::is_regular_file(*it)) {
                 std::string fileName = it->path().filename().string();
                 
-                if (!(fileName.compare(".DS_Store") == 0)) {
+                if ( it->path().extension() != ".DS_Store" ) {
                     
-                    ObjLoader loader((DataSourceRef) app::loadAsset(folderPath / fileName));
+                    ObjLoader loader((DataSourceRef) loadFile(it->path()));
                     TriMeshRef mesh = TriMesh::create(loader);
                     
                     // calc normals if needed
@@ -137,4 +108,4 @@ std::vector<TriMeshRef> BasicSampleApp::loadObjFolder(fs::path folderPath)
     return meshes;
 }
 
-CINDER_APP_NATIVE( BasicSampleApp, RendererGl )
+CINDER_APP( BasicSampleApp, RendererGl )

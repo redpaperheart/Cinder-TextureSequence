@@ -1,21 +1,6 @@
-Cinder - Texture Sequence.
+Cinder - Sequence
 ===========
 
-A helpful class to controle an image sequence.
+Templated branch of our TextureSequence block. Helpful to play a sequence of animated OBJ's, for example.
 
-
-Work in progress /  Todo:
---------
- * use TextureRef instead of pointers
- * possibility to switch between timeline and "on update calls"
- * clean up code
- * add some more comments
- * add block xml file
- * create samples 
- * QA
-
-
-Original code by makemachine http://labs.makemachine.net/
-Forked from https://github.com/makemachine/embers/tree/master/TextureSequence
-
-Changed class to use list of *Texture to improve performance when multiple instances of the same png-sequence is in use.
+To be used with [Cinder v0.9.0](https://libcinder.org/).

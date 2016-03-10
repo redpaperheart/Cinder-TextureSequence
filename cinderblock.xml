@@ -5,13 +5,14 @@
 	id="com.redpaperheart.texturesequence"
     git="git@github.com:redpaperheart/Cinder-TextureSequence.git"
 	author="Red Paper Heart"
-	summary="A helpful class to controle an image sequence."
-    version="1.0"
+	summary="A helpful class to play through a sequence of images or other objects."
+    version="1.1"
     url="https://github.com/redpaperheart/Cinder-TextureSequence"
 	>
 	<supports os="macosx" />
     <includePath>src</includePath>
-    <header>src/rph/TextureSequence.h</header>
-    <source>src/rph/TextureSequence.cpp</source>
+    <header>src/rph/Sequence.h</header>
+    <header>src/rph/SequenceLoader.h</header>
+    <source>src/rph/SequenceLoader.cpp</source>
 </block>
 </cinder>

@@ -8,11 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
-		209E2F651C91D26100C69647 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F641C91D26100C69647 /* IOKit.framework */; };
-		209E2F671C91D26600C69647 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F661C91D26600C69647 /* IOSurface.framework */; };
-		209E2F8B1C920CD600C69647 /* SequenceLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209E2F891C920CD600C69647 /* SequenceLoader.cpp */; };
-		20CB1D1E1A6ED2B90026ECA4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20CB1D1D1A6ED2B90026ECA4 /* AVFoundation.framework */; };
-		20CB1D201A6ED2C10026ECA4 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20CB1D1F1A6ED2C10026ECA4 /* CoreMedia.framework */; };
+		209E2F6A1C91D7E200C69647 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F691C91D7E200C69647 /* IOSurface.framework */; };
+		209E2F6C1C91D7E800C69647 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F6B1C91D7E800C69647 /* IOKit.framework */; };
+		209E2F6E1C91D7EC00C69647 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F6D1C91D7EC00C69647 /* Accelerate.framework */; };
+		209E2F701C91D80A00C69647 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F6F1C91D80A00C69647 /* CoreMedia.framework */; };
+		209E2F721C91D80E00C69647 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F711C91D80E00C69647 /* AVFoundation.framework */; };
+		209E2F741C91D83100C69647 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F731C91D83100C69647 /* CoreAudio.framework */; };
+		209E2F761C91D84400C69647 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F751C91D84400C69647 /* AudioUnit.framework */; };
+		209E2F781C91D84E00C69647 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209E2F771C91D84E00C69647 /* AudioToolbox.framework */; };
+		209E2F8E1C92138700C69647 /* SequenceLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209E2F8C1C92138700C69647 /* SequenceLoader.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		80B1C05274F94C009EBD7B07 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8E36B064A0E3427AAB670666 /* CinderApp.icns */; };
@@ -22,20 +26,24 @@
 
 /* Begin PBXFileReference section */
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		0F93521E22234F978D3878B6 /* BasicSample_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = BasicSample_Prefix.pch; sourceTree = "<group>"; };
+		0F93521E22234F978D3878B6 /* ObjSample_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjSample_Prefix.pch; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		209E2F641C91D26100C69647 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		209E2F661C91D26600C69647 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
-		209E2F891C920CD600C69647 /* SequenceLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SequenceLoader.cpp; path = ../../../src/rph/SequenceLoader.cpp; sourceTree = "<group>"; };
-		209E2F8A1C920CD600C69647 /* SequenceLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SequenceLoader.h; path = ../../../src/rph/SequenceLoader.h; sourceTree = "<group>"; };
-		20CB1D1D1A6ED2B90026ECA4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		20CB1D1F1A6ED2C10026ECA4 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		209E2F691C91D7E200C69647 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		209E2F6B1C91D7E800C69647 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		209E2F6D1C91D7EC00C69647 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		209E2F6F1C91D80A00C69647 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		209E2F711C91D80E00C69647 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		209E2F731C91D83100C69647 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		209E2F751C91D84400C69647 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		209E2F771C91D84E00C69647 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		209E2F8C1C92138700C69647 /* SequenceLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SequenceLoader.cpp; path = ../../../src/rph/SequenceLoader.cpp; sourceTree = "<group>"; };
+		209E2F8D1C92138700C69647 /* SequenceLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SequenceLoader.h; path = ../../../src/rph/SequenceLoader.h; sourceTree = "<group>"; };
 		20CB1D221A6EEFE90026ECA4 /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sequence.h; path = ../../../src/rph/Sequence.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* BasicSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BasicSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* ObjSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ObjSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E36B064A0E3427AAB670666 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		C07F106673BD47D2855DB20E /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		CA9D3DFD20604E4D901E0D8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -47,10 +55,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				209E2F671C91D26600C69647 /* IOSurface.framework in Frameworks */,
-				209E2F651C91D26100C69647 /* IOKit.framework in Frameworks */,
-				20CB1D1E1A6ED2B90026ECA4 /* AVFoundation.framework in Frameworks */,
-				20CB1D201A6ED2C10026ECA4 /* CoreMedia.framework in Frameworks */,
+				209E2F781C91D84E00C69647 /* AudioToolbox.framework in Frameworks */,
+				209E2F761C91D84400C69647 /* AudioUnit.framework in Frameworks */,
+				209E2F6A1C91D7E200C69647 /* IOSurface.framework in Frameworks */,
+				209E2F741C91D83100C69647 /* CoreAudio.framework in Frameworks */,
+				209E2F721C91D80E00C69647 /* AVFoundation.framework in Frameworks */,
+				209E2F701C91D80A00C69647 /* CoreMedia.framework in Frameworks */,
+				209E2F6E1C91D7EC00C69647 /* Accelerate.framework in Frameworks */,
+				209E2F6C1C91D7E800C69647 /* IOKit.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -88,10 +100,14 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				209E2F661C91D26600C69647 /* IOSurface.framework */,
-				209E2F641C91D26100C69647 /* IOKit.framework */,
-				20CB1D1D1A6ED2B90026ECA4 /* AVFoundation.framework */,
-				20CB1D1F1A6ED2C10026ECA4 /* CoreMedia.framework */,
+				209E2F771C91D84E00C69647 /* AudioToolbox.framework */,
+				209E2F751C91D84400C69647 /* AudioUnit.framework */,
+				209E2F731C91D83100C69647 /* CoreAudio.framework */,
+				209E2F711C91D80E00C69647 /* AVFoundation.framework */,
+				209E2F6F1C91D80A00C69647 /* CoreMedia.framework */,
+				209E2F6D1C91D7EC00C69647 /* Accelerate.framework */,
+				209E2F6B1C91D7E800C69647 /* IOKit.framework */,
+				209E2F691C91D7E200C69647 /* IOSurface.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
@@ -112,7 +128,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* BasicSample.app */,
+				8D1107320486CEB800E47090 /* ObjSample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -142,7 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				C07F106673BD47D2855DB20E /* Resources.h */,
-				0F93521E22234F978D3878B6 /* BasicSample_Prefix.pch */,
+				0F93521E22234F978D3878B6 /* ObjSample_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -169,8 +185,8 @@
 			isa = PBXGroup;
 			children = (
 				20CB1D221A6EEFE90026ECA4 /* Sequence.h */,
-				209E2F8A1C920CD600C69647 /* SequenceLoader.h */,
-				209E2F891C920CD600C69647 /* SequenceLoader.cpp */,
+				209E2F8D1C92138700C69647 /* SequenceLoader.h */,
+				209E2F8C1C92138700C69647 /* SequenceLoader.cpp */,
 			);
 			name = rph;
 			sourceTree = "<group>";
@@ -178,9 +194,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* BasicSample */ = {
+		8D1107260486CEB800E47090 /* ObjSample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "BasicSample" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "ObjSample" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -190,10 +206,10 @@
 			);
 			dependencies = (
 			);
-			name = BasicSample;
+			name = ObjSample;
 			productInstallPath = "$(HOME)/Applications";
 			productName = BasicSample;
-			productReference = 8D1107320486CEB800E47090 /* BasicSample.app */;
+			productReference = 8D1107320486CEB800E47090 /* ObjSample.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -202,9 +218,9 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0720;
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "BasicSample" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ObjSample" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -218,7 +234,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* BasicSample */,
+				8D1107260486CEB800E47090 /* ObjSample */,
 			);
 		};
 /* End PBXProject section */
@@ -240,7 +256,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6EF4146C59840D0931F15C2 /* BasicSampleApp.cpp in Sources */,
-				209E2F8B1C920CD600C69647 /* SequenceLoader.cpp in Sources */,
+				209E2F8E1C92138700C69647 /* SequenceLoader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +273,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = BasicSample_Prefix.pch;
+				GCC_PREFIX_HEADER = ObjSample_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -266,7 +282,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
-				PRODUCT_NAME = BasicSample;
+				PRODUCT_NAME = ObjSample;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
@@ -283,12 +299,12 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = BasicSample_Prefix.pch;
+				GCC_PREFIX_HEADER = ObjSample_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
-				PRODUCT_NAME = BasicSample;
+				PRODUCT_NAME = ObjSample;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
@@ -329,7 +345,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "BasicSample" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "ObjSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -338,7 +354,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "BasicSample" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ObjSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

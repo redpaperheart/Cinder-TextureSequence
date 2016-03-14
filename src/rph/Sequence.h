@@ -169,11 +169,11 @@ namespace rph {
         
         bool isPlaying()                            { return mPlaying; }                    // returns true if sequence is currently playing
         bool isEmpty()                              { return mFrames.empty(); }             // returns true if sequence is set up
-        bool isDone()const                          { return mComplete; }                   // returns true if sequence played thru and looping = false;
+        bool isDone() const                         { return mComplete; }                   // returns true if sequence played thru and looping = false;
         bool isLooping()                            { return mLooping; }
         bool hasOffsets()                           { return mHasOffsets; }
         
-        int getNumFrames()const                     { return mNumFrames; }
+        int getNumFrames() const                    { return mNumFrames; }
         int getPlayheadPosition() const             { return mPlayheadPosition; }
         float getFramerate()                        { return mFps; }
  

@@ -257,25 +257,26 @@ void TextureSequenceOptimizer::saveMax( fs::path path )
     }
     if( ! path.empty() ){
         
-        JsonTree doc = JsonTree::makeObject();
-        JsonTree sequence = JsonTree::makeArray("sequence");
         fs::path jsonPath = path;
         jsonPath.append("sequence.json");
+        JsonTree doc = JsonTree::makeObject();
         
+        JsonTree size = JsonTree::makeObject("size");
+        size.pushBack(JsonTree("width",  mOriOutline.getWidth()  ));
+        size.pushBack(JsonTree("height", mOriOutline.getHeight() ));
+        doc.pushBack(size);
+        
+        JsonTree sequence = JsonTree::makeArray("sequence");
         //go thru each surface
         for (int i = 0; i < mSurfaceRefs.size(); i++) {
-            
             fs::path tempPath = path;
-            
             
             //only clone the non-transparent area based on the offsets
             Surface tempSurf;
-            
             JsonTree curImage = JsonTree::makeObject();
             
             if( mTrimMaxAreas[i].calcArea() == 0 ){
                 app::console() << " Image is completely transparent: " << mFileNames[i] << std::endl;
-                
                 tempPath.append("transparent.png");
                 
                 // check if transparent pixel exists
@@ -289,7 +290,6 @@ void TextureSequenceOptimizer::saveMax( fs::path path )
                 curImage.pushBack(JsonTree("x", mTrimMaxAreas[i].x1));
                 curImage.pushBack(JsonTree("y", mTrimMaxAreas[i].y1));
                 curImage.pushBack(JsonTree("fileName", "transparent.png" ));
-                
             }else{
                 tempSurf = mSurfaceRefs[i]->clone(mTrimMaxAreas[i]);
                 tempPath.append(toString(mFileNames[i]));
@@ -330,12 +330,18 @@ void TextureSequenceOptimizer::saveMin( fs::path path )
 
 void TextureSequenceOptimizer::saveJson( const fs::path& path )
 {
-    //save the offsets for each image into a json file
-    JsonTree doc = JsonTree::makeObject();
-    JsonTree sequence = JsonTree::makeArray("sequence");
     fs::path jsonPath = path;
     jsonPath.append("sequence.json");
     
+    //save the offsets for each image into a json file
+    JsonTree doc = JsonTree::makeObject();
+    
+    JsonTree size = JsonTree::makeObject();
+    size.pushBack(JsonTree("width",  mOriOutline.getWidth()  ));
+    size.pushBack(JsonTree("height", mOriOutline.getHeight() ));
+    doc.pushBack(size);
+    
+    JsonTree sequence = JsonTree::makeArray("sequence");
     for (int i = 0; i < mTrimMaxAreas.size(); i ++) {
         JsonTree curImage = JsonTree::makeObject();
         curImage.pushBack(JsonTree("x", mTrimMaxAreas[i].x1));

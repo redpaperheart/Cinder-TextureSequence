@@ -32,6 +32,9 @@ public:
     Rectf                       mBatchMinOptRect;
     std::vector<SequenceData*>  mBatchSequenceDirectories;
     
+    bool    mUseOneTransparentImage = true;
+    bool    mTrimTransparentImages = true;
+    
     cinder::params::InterfaceGl mParams;
 };
 
@@ -59,6 +62,9 @@ void ImageOptimizerApp::setup()
 //    mParams.addButton( "play", bind( &TextureSequenceOptimizer::showAnimation, mOptimizr ) );
     mParams.addButton( "SaveMaxTrim", std::bind( &TextureSequenceOptimizer::saveMax, &mOptimizr, fs::path() ) );
     mParams.addButton( "SaveMinTrim", std::bind( &TextureSequenceOptimizer::saveMin, &mOptimizr, fs::path() ) );
+    
+    mParams.addParam("Use one transparent Image", &mUseOneTransparentImage  );
+    mParams.addParam("Trim Transparent Images", &mTrimTransparentImages );
 }
 
 void ImageOptimizerApp::analysePath( const fs::path& path, const fs::path& relativePath = "" )
@@ -127,7 +133,7 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
         int totalFilesizeOptimized = 0;
         
         //ask for where to store it
-        fs::path savePath = getFolderPath();
+        fs::path savePath = getFolderPath( event.getFile(0) );
         for (auto it = mBatchSequenceDirectories.begin(); it < mBatchSequenceDirectories.end(); it++){
             console() << (*it)->toString() << endl;
             // set up / reset each sequence and analyse images
@@ -148,7 +154,7 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
     }
     
     if( mBatchMinOptRect.contains( event.getPos() ) ){
-        console() << "MINIMUM OPTIMZATION BATCH!" << endl;
+        console() << "MINIMUM OPTIMZATION BATCH NOT IMPLEMENTED YET!" << endl;
         return;
     }
     

@@ -176,12 +176,16 @@ namespace rph {
         int getNumFrames() const                    { return mNumFrames; }
         int getPlayheadPosition() const             { return mPlayheadPosition; }
         float getFramerate()                        { return mFps; }
- 
+        
+        void setSize(vec2 xy)                       { mSize = vec3(xy.x, xy.y, 0); }
+        void setSize(vec3 xyz)                      { mSize = xyz; }
+        vec3 getSize()                              { return mSize; }
         
     protected:
         
         std::vector<T> mFrames;
         std::vector<vec3> mOffsets;
+        vec3 mSize = vec3(0);
         
         int mPlayheadPosition = 0;
         int mNumFrames = 0;

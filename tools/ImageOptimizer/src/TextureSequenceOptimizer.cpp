@@ -111,10 +111,15 @@ void TextureSequenceOptimizer::trimMax()
     int trimLeft = 0;
     int trimRight = 0;
     
+    int i = 0;
     //get the pixels need to be trimmed for each surface with 4 loops
     for (SurfaceRef surf : mSurfaceRefs) {
+        
+        trimTop = trimBottom = trimLeft = trimRight = 0;
+        
         bool stop = false;
         //go thru pixels from top
+        int count_y = 0;
         for (int y = 0; y < surf->getHeight(); y++) {
             for (int x =0; x < surf->getWidth(); x++) {
                 ColorA c = surf->getPixel( vec2(x, y) );
@@ -125,8 +130,20 @@ void TextureSequenceOptimizer::trimMax()
                     break;
                 }
             }
+            count_y = y;
             if( stop ) break;
         }
+        
+        //ci::app::console()<< "count_y: "<< count_y << ", surf->getHeight(): " << surf->getHeight() << std::endl;
+        if( count_y == surf->getHeight()-1 && trimTop == 0){
+            Area a = Area(trimLeft, trimTop, trimRight, trimBottom);
+            ci::app::console() << mFileNames[i] << ", "<< a << " Image TRANSPARENT!" << std::endl;
+            ci::app::console()<< "----------------" << std::endl;
+            mTrimMaxAreas.push_back( a );
+            i++;
+            continue;
+        }
+        
         
         //go thru from bottom
         stop = false;
@@ -169,10 +186,15 @@ void TextureSequenceOptimizer::trimMax()
             }
             if( stop ) break;
         }
+
+        Area a = Area(trimLeft, trimTop, trimRight, trimBottom);
+        ci::app::console() << mFileNames[i] << ", " << a << std::endl;
+        ci::app::console()<< "----------------" << std::endl;
         
         //pixel offsets need to be trimmed for each image
         //push to vector holds all the trim offsets
-        mTrimMaxAreas.push_back( Area(trimLeft, trimTop, trimRight, trimBottom) );
+        mTrimMaxAreas.push_back( a );
+        i++;
         
     }
     bTrimmedMax = true;
@@ -234,26 +256,57 @@ void TextureSequenceOptimizer::saveMax( fs::path path )
         app::console() << "SAVE MAX: " << path << std::endl;
     }
     if( ! path.empty() ){
+        
+        fs::path jsonPath = path;
+        jsonPath.append("sequence.json");
+        JsonTree doc = JsonTree::makeObject();
+        
+        JsonTree size = JsonTree::makeObject("size");
+        size.pushBack(JsonTree("width",  mOriOutline.getWidth()  ));
+        size.pushBack(JsonTree("height", mOriOutline.getHeight() ));
+        doc.pushBack(size);
+        
+        JsonTree sequence = JsonTree::makeArray("sequence");
         //go thru each surface
         for (int i = 0; i < mSurfaceRefs.size(); i++) {
-            
             fs::path tempPath = path;
-            tempPath.append(toString(mFileNames[i]));
             
             //only clone the non-transparent area based on the offsets
             Surface tempSurf;
+            JsonTree curImage = JsonTree::makeObject();
+            
             if( mTrimMaxAreas[i].calcArea() == 0 ){
-                app::console() << " Image is completely transparent: " << tempPath << std::endl;
-                tempSurf = mSurfaceRefs[i]->clone( Area(0,0,10,10) );
+                app::console() << " Image is completely transparent: " << mFileNames[i] << std::endl;
+                tempPath.append("transparent.png");
+                
+                // check if transparent pixel exists
+                if( !fs::exists(tempPath) ){
+                    // create transparent png if it doesn't exist
+                    tempSurf = mSurfaceRefs[i]->clone( Area(0,0,10,10) );
+                    writeImage( tempPath, tempSurf );
+                }
+                
+                // point to transparent image
+                curImage.pushBack(JsonTree("x", mTrimMaxAreas[i].x1));
+                curImage.pushBack(JsonTree("y", mTrimMaxAreas[i].y1));
+                curImage.pushBack(JsonTree("fileName", "transparent.png" ));
             }else{
                 tempSurf = mSurfaceRefs[i]->clone(mTrimMaxAreas[i]);
+                tempPath.append(toString(mFileNames[i]));
+                writeImage( tempPath, tempSurf );
+                curImage.pushBack(JsonTree("x", mTrimMaxAreas[i].x1));
+                curImage.pushBack(JsonTree("y", mTrimMaxAreas[i].y1));
+                curImage.pushBack(JsonTree("fileName", mFileNames[i] ));
             }
+            sequence.pushBack(curImage);
             
-//            app::console() << "saving: " << tempPath << " "<< mTrimMaxAreas[i] << std::endl;
-            writeImage( tempPath, tempSurf );
+            //app::console() << "saving: " << tempPath << " "<< mTrimMaxAreas[i] << std::endl;
+            
             tempPath.clear();
         }
-        saveJson(path);
+        doc.pushBack(sequence);
+        doc.write( jsonPath, JsonTree::WriteOptions());
+        //saveJson(path);
     }
 }
 
@@ -277,12 +330,18 @@ void TextureSequenceOptimizer::saveMin( fs::path path )
 
 void TextureSequenceOptimizer::saveJson( const fs::path& path )
 {
-    //save the offsets for each image into a json file
-    JsonTree doc = JsonTree::makeObject();
-    JsonTree sequence = JsonTree::makeArray("sequence");
     fs::path jsonPath = path;
     jsonPath.append("sequence.json");
     
+    //save the offsets for each image into a json file
+    JsonTree doc = JsonTree::makeObject();
+    
+    JsonTree size = JsonTree::makeObject();
+    size.pushBack(JsonTree("width",  mOriOutline.getWidth()  ));
+    size.pushBack(JsonTree("height", mOriOutline.getHeight() ));
+    doc.pushBack(size);
+    
+    JsonTree sequence = JsonTree::makeArray("sequence");
     for (int i = 0; i < mTrimMaxAreas.size(); i ++) {
         JsonTree curImage = JsonTree::makeObject();
         curImage.pushBack(JsonTree("x", mTrimMaxAreas[i].x1));

@@ -176,6 +176,7 @@ namespace rph {
         int getNumFrames() const                    { return mNumFrames; }
         int getPlayheadPosition() const             { return mPlayheadPosition; }
         float getFramerate()                        { return mFps; }
+        float getDuration()                         { return mFps * float(mNumFrames); }
         
         void setSize(vec2 xy)                       { mSize = vec3(xy.x, xy.y, 0); }
         void setSize(vec3 xyz)                      { mSize = xyz; }

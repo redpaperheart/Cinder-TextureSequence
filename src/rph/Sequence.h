@@ -44,7 +44,7 @@ namespace rph {
         {
             mFrames.clear();
             mFrames = frames;
-            mNumFrames = mFrames.size();
+            mNumFrames = (int) mFrames.size();
             setFramerate( fps );
             mHasOffsets = false;
         }
@@ -62,7 +62,7 @@ namespace rph {
         virtual void update()
         {
             if( mPlaying ){
-                int frameToBe = mStartFrame + (mPlayReverse?-1:1) * ((app::getElapsedSeconds() - mStartTime)/mTimePerFrame);
+                int frameToBe = (int) (mStartFrame + (mPlayReverse?-1:1) * ((app::getElapsedSeconds() - mStartTime)/mTimePerFrame));
                 int newPosition = frameToBe;
 
                 if( newPosition > mNumFrames - 1 ){
@@ -96,8 +96,8 @@ namespace rph {
                 mPlayReverse = reverse;
                 mPlaying = true;
                 mComplete = false;
-                mStartTime = app::getElapsedSeconds();
-                mStartFrame = mPlayheadPosition;
+                mStartTime = (float) app::getElapsedSeconds();
+                mStartFrame = (float) mPlayheadPosition;
             }
         }
         
@@ -125,7 +125,7 @@ namespace rph {
         void setFramerate( float fps )
         {
             mFps = fps;
-            mTimePerFrame = 1.0 / mFps;
+            mTimePerFrame = 1.0f / mFps;
         }
         
         //! Seek to a new position in the sequence [frames]
@@ -138,7 +138,7 @@ namespace rph {
         void setPlayheadPositionByPerc( float perc )
         {
             perc = math<float>::max( 0.0f, math<float>::min( perc, 1.0f ) );
-            setPlayheadPosition( perc * (mNumFrames - 1) );
+            setPlayheadPosition( (int) (perc * (mNumFrames - 1)) );
         }
         
         //! Get object at the current playhead position

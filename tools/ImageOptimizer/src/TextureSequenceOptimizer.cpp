@@ -5,6 +5,11 @@
 //
 
 #include "cinder/Json.h"
+#include "cinder/gl/Fbo.h"
+#include "cinder/gl/draw.h"
+#include "cinder/gl/scoped.h"
+#include "cinder/gl/wrapper.h"
+
 #include "TextureSequenceOptimizer.h"
 
 void TextureSequenceOptimizer::setup( const fs::path& path )

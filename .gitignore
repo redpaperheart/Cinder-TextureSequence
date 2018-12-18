@@ -27,14 +27,24 @@ xcuserdata
 *.xcworkspace
 
 #Visual Studio
-*.sdf
-*.opensdf
-*.suo
 *.pdb
 *.ilk
 *.aps
 *.tlog
+*.suo
+*.ncb
+*.sdf
+*.VC.opendb
+*.VC.db
+*.opensdf
+Debug/
+Release/
+Debug_ANGLE/
+Release_ANGLE/
+Debug_Shared/
+Release_Shared/
 ipch/
+.vs/
 
 # OS-specific ignore patterns
 

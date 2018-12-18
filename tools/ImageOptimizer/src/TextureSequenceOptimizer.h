@@ -8,6 +8,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
+#include "cinder/gl/wrapper.h"
 
 #include "rph/Sequence.h"
 
@@ -42,8 +43,8 @@ class TextureSequenceOptimizer
     
     Area                mTrimMinArea = Area(0,0,0,0);
     Area                mOriOutline = Area(0,0,0,0);
-    gl::TextureRef      mResultTextureRef = NULL;
-    gl::FboRef          mFboRef = NULL;
+    gl::TextureRef		mResultTextureRef = NULL;
+    gl::FboRef			mFboRef = NULL;
     
     std::vector<gl::TextureRef>     mTextureRefs;   //texture vector holds all the dropped images for overlaped display
     std::vector<SurfaceRef>         mSurfaceRefs;   //surfaces to hold all the images for trimming

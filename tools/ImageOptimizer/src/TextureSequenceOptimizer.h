@@ -23,7 +23,9 @@ class TextureSequenceOptimizer
 
     void saveMax( fs::path path = fs::path() );
     void saveMin( fs::path path = fs::path() );
-    
+	
+	void setPadding(int value) { mPadding = value; }
+	int getPadding() { return mPadding; }
 //    void showAnimation();
 //    void play(const fs::path& path);
     
@@ -40,7 +42,8 @@ class TextureSequenceOptimizer
     bool bTrimmedMax = false;
     
     rph::TextureSequence *mSequence = NULL; //texture sequence
-    
+	
+	int					mPadding = 0;
     Area                mTrimMinArea = Area(0,0,0,0);
     Area                mOriOutline = Area(0,0,0,0);
     gl::TextureRef		mResultTextureRef = NULL;

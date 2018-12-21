@@ -34,6 +34,7 @@ public:
     
     bool    mUseOneTransparentImage = true;
     bool    mTrimTransparentImages = true;
+	int     mPadding = 0;
     
     cinder::params::InterfaceGl mParams;
 };
@@ -65,6 +66,10 @@ void ImageOptimizerApp::setup()
     
     mParams.addParam("Use one transparent Image", &mUseOneTransparentImage  );
     mParams.addParam("Trim Transparent Images", &mTrimTransparentImages );
+	mParams.addParam("Image Padding", &mPadding );
+//	mParams.addParam("Image Padding",
+//					 std::bind( &TextureSequenceOptimizer::setPadding, &mOptimizr ),
+//					 std::bind( &TextureSequenceOptimizer::getPadding, &mOptimizr ) );
 }
 
 void ImageOptimizerApp::analysePath( const fs::path& path, const fs::path& relativePath = "" )
@@ -174,6 +179,7 @@ void ImageOptimizerApp::fileDrop(FileDropEvent event){
 void ImageOptimizerApp::update()
 {
     mOptimizr.update();
+	mOptimizr.setPadding(mPadding);
 }
 
 void ImageOptimizerApp::draw()

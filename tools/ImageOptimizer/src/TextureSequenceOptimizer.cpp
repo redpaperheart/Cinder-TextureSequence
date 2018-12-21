@@ -296,9 +296,28 @@ void TextureSequenceOptimizer::saveMax( fs::path path )
                 curImage.pushBack(JsonTree("y", mTrimMaxAreas[i].y1));
                 curImage.pushBack(JsonTree("fileName", "transparent.png" ));
             }else{
-                tempSurf = mSurfaceRefs[i]->clone(mTrimMaxAreas[i]);
-                tempPath.append(toString(mFileNames[i]));
-                writeImage( tempPath, tempSurf );
+				if (mPadding > 0) {
+					Area trimArea = mTrimMaxAreas[i];
+					trimArea.expand(mPadding, mPadding);
+					SurfaceRef newSurf = Surface::create(trimArea.getWidth(), trimArea.getHeight(), true, mSurfaceRefs[i]->getChannelOrder());
+					for (int y = 0; y < newSurf->getHeight(); y++) {
+						for (int x =0; x < newSurf->getWidth(); x++) {
+							ColorA color(0,0,0,0);
+							newSurf->setPixel( vec2(x, y), color );
+						}
+					}
+					ivec2 offset = ivec2(-trimArea.getX1(), -trimArea.getY1());
+					newSurf->copyFrom(*mSurfaceRefs[i], mTrimMaxAreas[i], offset);
+					
+					tempPath.append(toString(mFileNames[i]));
+					writeImage( tempPath, *newSurf );
+				}
+				else {
+					tempSurf = mSurfaceRefs[i]->clone(mTrimMaxAreas[i]);
+					tempPath.append(toString(mFileNames[i]));
+					writeImage( tempPath, tempSurf );
+				}
+				
                 curImage.pushBack(JsonTree("x", mTrimMaxAreas[i].x1));
                 curImage.pushBack(JsonTree("y", mTrimMaxAreas[i].y1));
                 curImage.pushBack(JsonTree("fileName", mFileNames[i] ));

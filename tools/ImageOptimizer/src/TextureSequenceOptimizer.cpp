@@ -73,6 +73,8 @@ std::vector<gl::TextureRef> TextureSequenceOptimizer::loadImageDirectory(fs::pat
     mSurfaceRefs.clear();
     mFileNames.clear();
     
+//    std::vector<std::string> paths;
+    std::string dirPath = "";
     std::vector<gl::TextureRef> textureRefs;
     textureRefs.clear();
     for ( fs::directory_iterator it( dir ); it != fs::directory_iterator(); ++it ){
@@ -83,18 +85,34 @@ std::vector<gl::TextureRef> TextureSequenceOptimizer::loadImageDirectory(fs::pat
             //load acceptable images only
             if( fileExtention == ".png" || fileExtention == ".jpg" || fileExtention == ".jpeg" ){
                 // load dropped images
-                std::string path = dir.string() + "/" + fileName;
-                SurfaceRef surf = Surface::create(loadImage(path));
-                gl::TextureRef tex = gl::Texture::create(*surf);
-                
-                // save them in vector
-                mTextureRefs.push_back(tex);
-                mSurfaceRefs.push_back(surf);
+                dirPath =  dir.string();
+//                std::string path = dir.string() + "/" + fileName;
+//                paths.push_back(path);
+//                SurfaceRef surf = Surface::create(loadImage(path));
+//                gl::TextureRef tex = gl::Texture::create(*surf);
+//
+//                // save them in vector
+//                mTextureRefs.push_back(tex);
+//                mSurfaceRefs.push_back(surf);
                 
                 //save the names in vector
+//                ci::app::console() << fileName << std::endl;
                 mFileNames.push_back(fileName);
             }
         }
+    }
+    std::sort(mFileNames.begin(), mFileNames.end(), [](const std::string lhs, const std::string rhs) {
+        return lhs < rhs;
+    });
+    for (std::string fileName : mFileNames) {
+        ci::app::console() << fileName << std::endl;
+        
+        std::string path = dirPath + "/" + fileName;
+        SurfaceRef surf = Surface::create(loadImage(path));
+        gl::TextureRef tex = gl::Texture::create(*surf);
+        // save them in vector
+        mTextureRefs.push_back(tex);
+        mSurfaceRefs.push_back(surf);
     }
     return textureRefs;
 }
@@ -384,27 +402,35 @@ void TextureSequenceOptimizer::update()
 
 void TextureSequenceOptimizer::draw()
 {
-    gl::color(1,1,1);
-    gl::draw(mResultTextureRef);
-
-    gl::color( ColorA(1, 0, 0, 0.5f) );
-    gl::drawSolidRect(Rectf(mOriOutline.x1,mOriOutline.y1, mOriOutline.x2, mTrimMinArea.y1));
-    gl::drawSolidRect(Rectf(mOriOutline.x1,mOriOutline.y1, mTrimMinArea.x1, mOriOutline.y2));
-    gl::drawSolidRect(Rectf(mOriOutline.x1,mTrimMinArea.y2, mOriOutline.x2, mOriOutline.y2));
-    gl::drawSolidRect(Rectf(mTrimMinArea.x2,mOriOutline.y1, mOriOutline.x2, mOriOutline.y2));
-
-    gl::color(0,0,1);
-    for (Area trimArea : mTrimMaxAreas) {
-        gl::drawStrokedRect(Rectf(trimArea));
+    {
+        gl::ScopedColor(ci::Color(1,1,1));
+//        gl::color(1,1,1);
+        gl::draw(mResultTextureRef);
     }
-    
+    {
+        gl::ScopedColor(ColorA(1, 0, 0, 0.5f));
+//        gl::color( ColorA(1, 0, 0, 0.5f) );
+        gl::drawSolidRect(Rectf(mOriOutline.x1,mOriOutline.y1, mOriOutline.x2, mTrimMinArea.y1));
+        gl::drawSolidRect(Rectf(mOriOutline.x1,mOriOutline.y1, mTrimMinArea.x1, mOriOutline.y2));
+        gl::drawSolidRect(Rectf(mOriOutline.x1,mTrimMinArea.y2, mOriOutline.x2, mOriOutline.y2));
+        gl::drawSolidRect(Rectf(mTrimMinArea.x2,mOriOutline.y1, mOriOutline.x2, mOriOutline.y2));
+    }
+    {
+//        gl::color(0,0,1);
+        gl::ScopedColor(ci::Color(0,0,1));
+        for (Area trimArea : mTrimMaxAreas) {
+            gl::drawStrokedRect(Rectf(trimArea));
+        }
+    }
 //    if(mSequence){
 //        gl::color(ColorA(1,1,1,1));
 //        gl::draw( mSequence->getCurrentTexture() );
 //    }
-    
-    gl::color(1, 0, 0);
-    gl::drawStrokedRect(Rectf(mOriOutline));
+    {
+//        gl::color(1, 0, 0);
+        gl::ScopedColor(ci::Color(1,0,0));
+        gl::drawStrokedRect(Rectf(mOriOutline));
+    }
     
 }
 

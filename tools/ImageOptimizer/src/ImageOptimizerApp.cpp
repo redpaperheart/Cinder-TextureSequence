@@ -180,6 +180,8 @@ void ImageOptimizerApp::draw()
 {
     gl::clear(Color(0,0,0));
     
+    gl::ScopedMatrices m;
+    
     mOptimizr.draw();
     
     gl::color(1,1,1);

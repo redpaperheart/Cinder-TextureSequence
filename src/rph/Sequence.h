@@ -164,6 +164,32 @@ namespace rph {
         //! TODO
         void stepForward( int frameInc = 1 )        {}
         void stepBackward( int frameInc = 1 )       {}
+
+		//step either forward or backward
+		void step(int frameInc = 1) {
+			//keep in bounds
+			int newPosition = mPlayheadPosition+frameInc;
+
+			if (newPosition > mNumFrames - 1) {
+				if (mLooping) {
+					mPlayheadPosition = newPosition % mNumFrames;
+				}
+				else {
+					mPlayheadPosition = mNumFrames - 1;
+				}
+			}
+			else if (newPosition < 0) {
+				if (mLooping) {
+					mPlayheadPosition = (mNumFrames + (newPosition % mNumFrames)) % mNumFrames;
+				}
+				else {
+					mPlayheadPosition = 0;
+				}
+			}
+			else {
+				mPlayheadPosition = newPosition;
+			}
+		}
         
         void setLoop( bool doLoop )                 { mLooping = doLoop; }
         

@@ -28,6 +28,8 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/TriMesh.h"
 
+#include "cinder/Log.h"
+
 using namespace ci;
 
 namespace rph {
@@ -67,17 +69,14 @@ namespace rph {
 
                 if( newPosition > mNumFrames - 1 ){
                     if( mLooping ){
-                        mComplete = false;
-                        mPlayheadPosition = newPosition % mNumFrames;
+						handleLoop(newPosition);
                     } else {
                         mComplete = true;
                         stop();
                     }
                 } else if( newPosition < 0 ) {
                     if( mLooping ){
-                        mComplete = false;
-                        mPlayheadPosition = (mNumFrames + (newPosition % mNumFrames))%mNumFrames ;
-                        
+						handleLoop(newPosition);
                     } else {
                         mComplete = true;
                         stop();
@@ -166,13 +165,16 @@ namespace rph {
         void stepBackward( int frameInc = 1 )       {}
 
 		//step either forward or backward
+		
 		void step(int frameInc = 1) {
+			//!!disable ping pong
+			mPingPong = false;
 			//keep in bounds
 			int newPosition = mPlayheadPosition+frameInc;
 
 			if (newPosition > mNumFrames - 1) {
 				if (mLooping) {
-					mPlayheadPosition = newPosition % mNumFrames;
+					handleLoop(newPosition);
 				}
 				else {
 					mPlayheadPosition = mNumFrames - 1;
@@ -180,7 +182,7 @@ namespace rph {
 			}
 			else if (newPosition < 0) {
 				if (mLooping) {
-					mPlayheadPosition = (mNumFrames + (newPosition % mNumFrames)) % mNumFrames;
+					handleLoop(newPosition);
 				}
 				else {
 					mPlayheadPosition = 0;
@@ -192,6 +194,7 @@ namespace rph {
 		}
         
         void setLoop( bool doLoop )                 { mLooping = doLoop; }
+		void setPinPong(bool doPingpong)			{ mPingPong = doPingpong; }
         
         bool isPlaying()                            { return mPlaying; }                    // returns true if sequence is currently playing
         bool isEmpty()                              { return mFrames.empty(); }             // returns true if sequence is set up
@@ -207,12 +210,33 @@ namespace rph {
         void setSize(vec2 xy)                       { mSize = vec3(xy.x, xy.y, 0); }
         void setSize(vec3 xyz)                      { mSize = xyz; }
         vec3 getSize()                              { return mSize; }
+
+		void setReverse(bool val) {
+			mPlayReverse = val;
+		}
         
     protected:
         
         std::vector<T> mFrames;
         std::vector<vec3> mOffsets;
         vec3 mSize = vec3(0);
+
+		void handleLoop(int newPosition) {
+			mComplete = false;
+			if(mPingPong){
+				//with ping pongs we need to stop then start in the opposite dir
+				stop();
+				play(!mPlayReverse);
+				return;
+			}
+			//regular loop
+			if (newPosition > mNumFrames - 1) {
+				mPlayheadPosition = newPosition % mNumFrames;
+			}
+			else if (newPosition < 0) {
+				mPlayheadPosition = (mNumFrames + (newPosition % mNumFrames)) % mNumFrames;
+			}
+		}
         
         int mPlayheadPosition = 0;
         int mNumFrames = 0;
@@ -223,6 +247,7 @@ namespace rph {
         float mStartFrame = 0.0f;
         
         bool mLooping = false;
+		bool mPingPong = false; //if loop and ping pong we play in reverse at the end
         bool mPlaying = false;
         bool mComplete = false;
         bool mPlayReverse = false;

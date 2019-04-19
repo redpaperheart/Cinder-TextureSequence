@@ -194,7 +194,7 @@ namespace rph {
 		}
         
         void setLoop( bool doLoop )                 { mLooping = doLoop; }
-		void setPinPong(bool doPingpong)			{ mPingPong = doPingpong; }
+		void setPingPong(bool doPingpong)			{ mPingPong = doPingpong; }
         
         bool isPlaying()                            { return mPlaying; }                    // returns true if sequence is currently playing
         bool isEmpty()                              { return mFrames.empty(); }             // returns true if sequence is set up
@@ -204,6 +204,8 @@ namespace rph {
         
         int getNumFrames() const                    { return mNumFrames; }
         int getPlayheadPosition() const             { return mPlayheadPosition; }
+		int getLoopCount() const					{ return loopCount; }
+		void resetLoopCount() { loopCount=0; }
         float getFramerate()                        { return mFps; }
         float getDuration()                         { return float(mNumFrames) / mFps; }
         
@@ -223,6 +225,8 @@ namespace rph {
 
 		void handleLoop(int newPosition) {
 			mComplete = false;
+			loopCount++;
+
 			if(mPingPong){
 				//with ping pongs we need to stop then start in the opposite dir
 				stop();
@@ -240,6 +244,7 @@ namespace rph {
         
         int mPlayheadPosition = 0;
         int mNumFrames = 0;
+		int loopCount = 0; //inc every time we loop
         
         float mFps = 30.0f;
         float mTimePerFrame = 0.0f;

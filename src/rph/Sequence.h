@@ -46,7 +46,7 @@ namespace rph {
         {
             mFrames.clear();
             mFrames = frames;
-            mNumFrames = mFrames.size();
+            mNumFrames = int(mFrames.size());
             setFramerate( fps );
             mHasOffsets = false;
         }

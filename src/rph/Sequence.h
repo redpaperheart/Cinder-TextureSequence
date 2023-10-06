@@ -224,7 +224,6 @@ namespace rph {
         vec3 mSize = vec3(0);
 
 		void handleLoop(int newPosition) {
-			mComplete = false;
 			loopCount++;
 
 			if(mPingPong){
@@ -240,6 +239,7 @@ namespace rph {
 			else if (newPosition < 0) {
 				mPlayheadPosition = (mNumFrames + (newPosition % mNumFrames)) % mNumFrames;
 			}
+            play(mPlayReverse);
 		}
         
         int mPlayheadPosition = 0;

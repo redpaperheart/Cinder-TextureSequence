@@ -33,14 +33,29 @@
 using namespace ci;
 
 namespace rph {
+
+    template<typename T>
+    class Sequence;
+
+    // Some handy typedefs
+    using TextureSequence = Sequence<gl::TextureRef>;
+    using TriMeshSequence = Sequence<TriMeshRef>;
+    using TextureSequenceRef = std::shared_ptr<TextureSequence>;
+    using TriMeshSequenceRef = std::shared_ptr<TriMeshSequence>;
     
     template<typename T>
     class Sequence {
         
     public:
         Sequence()  {}
-        ~Sequence() {}
+        virtual ~Sequence() {
+            mFrames.clear();
+        }
         
+        static std::shared_ptr<Sequence<T>> create() {
+            return std::make_shared<Sequence<T>>();
+        }
+
         //! Setup with a vector of objects and optional framerate
         virtual void setup( const std::vector<T> &frames, const float &fps = 30.0f )
         {
@@ -216,6 +231,10 @@ namespace rph {
 		void setReverse(bool val) {
 			mPlayReverse = val;
 		}
+
+        void clear() {
+            mFrames.clear();
+        }
         
     protected:
         
@@ -258,8 +277,4 @@ namespace rph {
         bool mPlayReverse = false;
         bool mHasOffsets = false;
     };
-    
-    // Some handy typedefs
-    typedef Sequence<gl::TextureRef>    TextureSequence;
-    typedef Sequence<TriMeshRef>        TriMeshSequence;
 }

@@ -61,7 +61,7 @@ namespace rph {
         {
             mFrames.clear();
             mFrames = frames;
-            mNumFrames = int(mFrames.size());
+            mNumFrames = mFrames.size();
             setFramerate( fps );
             mHasOffsets = false;
         }
@@ -111,7 +111,7 @@ namespace rph {
                 mPlaying = true;
                 mComplete = false;
                 mStartTime = app::getElapsedSeconds();
-                mStartFrame = mPlayheadPosition;
+                mStartFrame = int(mPlayheadPosition);
             }
         }
         
@@ -143,16 +143,16 @@ namespace rph {
         }
         
         //! Seek to a new position in the sequence [frames]
-        void setPlayheadPosition( int newPosition )
+        void setPlayheadPosition( size_t newPosition )
         {
-            mPlayheadPosition = math<int>::max( 0, math<int>::min( newPosition, mNumFrames - 1 ) );
+            mPlayheadPosition = math<size_t>::max( 0, math<size_t>::min( newPosition, mNumFrames - 1 ) );
         }
         
         //! Seek to a new position in the sequence [0.0 - 1.0]
         void setPlayheadPositionByPerc( float perc )
         {
             perc = math<float>::max( 0.0f, math<float>::min( perc, 1.0f ) );
-            setPlayheadPosition( perc * (mNumFrames - 1) );
+            setPlayheadPosition( perc * ( mNumFrames - 1) );
         }
         
         //! Get object at the current playhead position
@@ -160,6 +160,16 @@ namespace rph {
         {
             if( mFrames.size() > 0 ){
                 return mFrames.at( mPlayheadPosition );
+            } else {
+                return nullptr;
+            }
+        }
+        
+        //! Get object at the current playhead position
+        T const getCurrentFrame(int frameShift)
+        {
+            if( mFrames.size() > 0 ){
+                return mFrames.at( (mPlayheadPosition + frameShift) % mNumFrames );
             } else {
                 return NULL;
             }
@@ -170,6 +180,16 @@ namespace rph {
         {
             if( mOffsets.size() > 0 ){
                 return mOffsets.at( mPlayheadPosition );
+            } else {
+                return vec3(0);
+            }
+        }
+        
+        //! Get offset of the current frame (for trimmed/optimized img sequences)
+        vec3 getCurrentOffset(int frameShift)
+        {
+            if( mOffsets.size() > 0 ){
+                return mOffsets.at( (mPlayheadPosition + frameShift) % mNumFrames );
             } else {
                 return vec3(0);
             }
@@ -217,8 +237,8 @@ namespace rph {
         bool isLooping()                            { return mLooping; }
         bool hasOffsets()                           { return mHasOffsets; }
         
-        int getNumFrames() const                    { return mNumFrames; }
-        int getPlayheadPosition() const             { return mPlayheadPosition; }
+        size_t getNumFrames() const                 { return mNumFrames; }
+        size_t getPlayheadPosition() const          { return mPlayheadPosition; }
 		int getLoopCount() const					{ return loopCount; }
 		void resetLoopCount() { loopCount=0; }
         float getFramerate()                        { return mFps; }
@@ -261,15 +281,14 @@ namespace rph {
             play(mPlayReverse);
 		}
         
-        int mPlayheadPosition = 0;
-        int mNumFrames = 0;
+        size_t mPlayheadPosition = 0;
+        size_t mNumFrames = 0;
 		int loopCount = 0; //inc every time we loop
         
         float mFps = 30.0f;
         float mTimePerFrame = 0.0f;
         float mStartTime = 0.0f;
-        float mStartFrame = 0.0f;
-        
+        int mStartFrame = 0;
         bool mLooping = false;
 		bool mPingPong = false; //if loop and ping pong we play in reverse at the end
         bool mPlaying = false;
